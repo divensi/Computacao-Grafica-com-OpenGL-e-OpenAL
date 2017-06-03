@@ -1,20 +1,22 @@
-#include <vector>
-#include <GL/gl.h>
-#include <GL/glut.h>
 #include "Membro.h"
 #include "Vertice.h"
+#include <GL/gl.h>
+#include <GL/glut.h>
+#include <vector>
 
 class Modelo {
 public:
-    Modelo() {
+    Modelo()
+    {
         largura = 0;
-        altura  = 0;
-        angulo  = 0;
+        altura = 0;
+        angulo = 0;
     }
-    Modelo(std::string folder, std::string model) {
+    Modelo(std::string folder, std::string model)
+    {
         largura = 0;
-        altura  = 0;
-        angulo  = 0;
+        altura = 0;
+        angulo = 0;
         this->importarModelo(folder, model);
     }
 
