@@ -15,9 +15,10 @@ GLfloat cameraY = 0;
 GLfloat cameraZ = 0;
 GLfloat angle, fAspect;
 
-static int eixoy, eixox;
-int largura, altura;
-int xAux, yAux;
+static GLint eixoy, eixox;
+GLint largura, altura;
+GLint xAux, yAux;
+static GLfloat spin = 0.0;
 
 // modelo do mario
 // std::string folder  = "model";
@@ -99,6 +100,8 @@ void reshape(int w, int h)
     if (h == 0)
         h = 1;
 
+    altura = h;
+    largura = w;
     // Especifica as dimens�es da viewport
     glViewport(0, 0, w, h);
 
@@ -125,24 +128,12 @@ void GerenciaMouse(int button, int state, int x, int y)
     glutPostRedisplay();
 }
 
-void display(void)
+void renderizarModelos()
 {
-    glPushMatrix();
-    glLoadIdentity();
-
-    glRotatef((GLfloat)eixoy, 0.0, 1.0, 0.0);
-    glRotatef((GLfloat)eixox, 1.0, 0.0, 0.0);
-
-    EspecificaParametrosVisualizacao();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // percorre membros
     for (int i = 0; i < rotBox.membros.size(); i++) {
         if (rotBox.membros[i].textura_nome != "") {
             glColor3f(1.0, 1.0, 1.0);
 
-            std::cout << rotBox.membros[i].textura_nome << "/"
-                      << rotBox.membros[i].useMaterial << "\n";
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, rotBox.membros[i].textura);
         } else {
@@ -184,6 +175,65 @@ void display(void)
 
         //    glPopMatrix();
     }
+}
+
+void spinDisplay(void)
+{
+    spin = spin + 2.0;
+    if (spin > 360.0)
+        spin = spin - 360.0;
+    glutPostRedisplay();
+}
+
+void display(void)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glPushMatrix();
+
+    // top left: top view
+    glViewport(0, altura / 2, largura / 2, altura / 2);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-12.0, 12.0, -12.0, 12.0, 1.0, 50.0);
+    gluLookAt(0.0, 20.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    renderizarModelos();
+
+    // top right: right view
+    glViewport(largura / 2, altura / 2, largura / 2, altura / 2);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-12.0, 12.0, -12.0, 12.0, 1.0, 50.0);
+    gluLookAt(20.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    renderizarModelos();
+
+    // bottom left: front view
+    glViewport(0, 0, largura / 2, altura / 2);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-12.0, 12.0, -12.0, 12.0, 1.0, 50.0);
+    gluLookAt(0.0, 0.0, 20.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    renderizarModelos();
+
+    // bottom right: rotating perspective view
+    glViewport(largura / 2, 0, largura / 2, altura / 2);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(angle, fAspect, 0.5, 500);
+    gluLookAt(0.0, 0.0, 20.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glRotatef(45.0, 1.0, 0.0, 0.0);
+
+    glRotatef(spin, 0.0, 1.0, 0.0);
+    renderizarModelos();
+
     glPopMatrix();
     glutSwapBuffers();
 }
@@ -260,7 +310,7 @@ int main(int argc, char** argv)
     glutInit(&argc, argv);
 
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
-    glutInitWindowSize(300, 300);
+    glutInitWindowSize(800, 800);
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
     init();
@@ -268,6 +318,7 @@ int main(int argc, char** argv)
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(TeclasEspeciais);
     glutMouseFunc(GerenciaMouse);
+    glutIdleFunc(spinDisplay);
 
     if (!LoadGLTextures()) {
         return 1; // If Texture Didn't Load Return FALSE
