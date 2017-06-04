@@ -1,0 +1,19 @@
+# animacao nomeAnim totalFrames
+# o objeto1
+# f dx dy dz rx ry rz sx sy sx //frame1
+# f dx dy dz rx ry rz sx sy sx //frame2
+# f dx dy dz rx ry rz sx sy sx //frame3
+# o objeto2
+# f dx dy dz rx ry rz sx sy sx //frame1
+# f dx dy dz rx ry rz sx sy sx //frame2
+# f dx dy dz rx ry rz sx sy sx //frame3
+
+# animacao2 nomeAnim totalFrames
+# o objeto1
+# f dx dy dz rx ry rz sx sy sx //frame1
+# f dx dy dz rx ry rz sx sy sx //frame2
+# f dx dy dz rx ry rz sx sy sx //frame3
+# o objeto2
+# f dx dy dz rx ry rz sx sy sx //frame1
+# f dx dy dz rx ry rz sx sy sx //frame2
+# f dx dy dz rx ry rz sx sy sx //frame3

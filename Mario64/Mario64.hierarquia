@@ -1,0 +1,30 @@
+# h filho pai
+h Left_Foot Left_Lower_Leg
+h Left_Lower_Leg Left_Upper_Leg
+h Left_Upper_Leg Abdomen
+
+h Right_Foot Right_Lower_Leg
+h Right_Lower_Leg Right_Upper_Leg
+h Right_Upper_Leg Abdomen
+
+h Left_Hand Left_Lower_Arm
+h Left_Lower_Arm Left_Upper_Arm
+h Left_Upper_Arm Chest
+
+h Right_Hand Right_Lower_Arm
+h Right_Lower_Arm Right_Upper_Arm
+h Right_Upper_Arm Chest
+
+h Abdomen Chest
+h Buttons Chest
+
+h Neck_Chest Chest
+
+h Face Chest
+
+h Cap Face
+h Eyes Face
+h Hair Face
+h Hair_Piece Face
+h Logo Face
+h Moustache Face

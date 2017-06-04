@@ -6,15 +6,15 @@
 #include <sstream>
 #include <string>
 
-void Modelo::importarModelo(std::string folder, std::string model)
+void Modelo::importarModelo(std::string model, std::string ds)
 {
     // Modelo
     std::stringstream obj;
-    obj << folder << "/" << model << ".obj";
+    obj << model << ds << model << ".obj";
 
     // Materiais
     std::stringstream mtl;
-    mtl << folder << "/" << model << ".mtl";
+    mtl << model << ds << model << ".mtl";
 
     this->membros.clear();
 

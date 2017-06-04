@@ -12,12 +12,12 @@ public:
         altura = 0;
         angulo = 0;
     }
-    Modelo(std::string folder, std::string model)
+    Modelo(std::string model, std::string ds)
     {
         largura = 0;
         altura = 0;
         angulo = 0;
-        this->importarModelo(folder, model);
+        this->importarModelo(model, ds);
     }
 
     std::vector<Vertice> v; // vertices
@@ -26,7 +26,7 @@ public:
 
     std::vector<Membro> membros;
 
-    void importarModelo(std::string folder, std::string model);
+    void importarModelo(std::string model, std::string ds);
 
     float largura;
     float altura;

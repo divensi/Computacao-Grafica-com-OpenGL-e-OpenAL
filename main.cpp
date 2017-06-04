@@ -21,14 +21,21 @@ GLint xAux, yAux;
 static GLfloat spin = 0.0;
 
 // modelo do mario
-// std::string folder  = "model";
-// std::string model   = "Mario64";
-std::string ds = "/"; // separador de diretorio
+std::string model = "Mario64";
 
-std::string folder = "castelo";
-std::string model = "princessCastle";
+// Gambiarra para o separador de diretório funcionar tanto em windows quanto no
+// Linux
+std::string ds =
+#ifdef _WIN32
+    "\\";
+#else
+    "/";
+#endif
 
-Modelo rotBox = Modelo(folder, model); // mario
+// std::string folder = "castelo";
+// std::string model = "princessCastle";
+
+Modelo rotBox = Modelo(model, ds); // mario
 
 // Load Bitmaps And Convert To Textures
 int LoadGLTextures()
@@ -36,7 +43,7 @@ int LoadGLTextures()
     for (int i = 0; i < rotBox.membros.size(); i++) {
         if (rotBox.membros[i].textura_nome != "") {
             std::stringstream texture_file;
-            texture_file << folder << ds << rotBox.membros[i].textura_nome;
+            texture_file << model << ds << rotBox.membros[i].textura_nome;
             // std::cout << texture_file.str() << "\n";
             /* load an image file directly as a new OpenGL texture */
             rotBox.membros[i].textura = SOIL_load_OGL_texture(
@@ -50,8 +57,8 @@ int LoadGLTextures()
         }
         // Typical Texture Generation Using Data From The Bitmap
         glBindTexture(GL_TEXTURE_2D, rotBox.membros[i].textura);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         //
         // glEnable(GL_TEXTURE_2D);			    // Enable Texture Mapping (
         // NEW ) glShadeModel(GL_SMOOTH);			    // Enable Smooth
@@ -131,6 +138,8 @@ void GerenciaMouse(int button, int state, int x, int y)
 void renderizarModelos()
 {
     for (int i = 0; i < rotBox.membros.size(); i++) {
+        glPushMatrix();
+
         if (rotBox.membros[i].textura_nome != "") {
             glColor3f(1.0, 1.0, 1.0);
 
@@ -140,11 +149,6 @@ void renderizarModelos()
             float r = rotBox.membros[i].colR;
             float g = rotBox.membros[i].colG;
             float b = rotBox.membros[i].colB;
-
-            // std::cout << "\n nome:" << rotBox.membros[i].nome << " textura:" <<
-            // rotBox.membros[i].useMaterial <<  " R:" << r << " G:" << g << " B:" <<
-            // b
-            // << '\n';
 
             glColor3f(r, g, b);
         }
@@ -173,7 +177,7 @@ void renderizarModelos()
             glColor3f(1.0, 1.0, 1.0);
         }
 
-        //    glPopMatrix();
+        glPopMatrix();
     }
 }
 
@@ -289,6 +293,26 @@ void keyboard(unsigned char key, int x, int y)
         break;
     case 'X':
         eixox = (eixox - 5) % 360;
+        glutPostRedisplay();
+        break;
+    case '1':
+        for (int i = 0; i < rotBox.membros.size(); i++) {
+            std::cout << i << " - " << rotBox.membros[i].textura_nome << "\n";
+            if (rotBox.membros[i].textura_nome == "bowserCastle.png") {
+                rotBox.membros[i].textura_nome = "castle.png";
+            }
+        }
+        LoadGLTextures();
+        glutPostRedisplay();
+        break;
+    case '2':
+        for (int i = 0; i < rotBox.membros.size(); i++) {
+            std::cout << i << " - " << rotBox.membros[i].textura_nome << "\n";
+            if (rotBox.membros[i].textura_nome == "castle.png") {
+                rotBox.membros[i].textura_nome = "bowserCastle.png";
+            }
+        }
+        LoadGLTextures();
         glutPostRedisplay();
         break;
     case 'p':
