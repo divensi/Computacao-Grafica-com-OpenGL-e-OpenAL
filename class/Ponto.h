@@ -9,9 +9,9 @@ public:
 
     Ponto(int idVert, int idNorm, int idText)
     {
-        idVert = this->idVert;
-        idNorm = this->idNorm;
-        idText = this->idText;
+        this->idVert = idVert;
+        this->idNorm = idNorm;
+        this->idText = idText;
     }
 
     int idVert;

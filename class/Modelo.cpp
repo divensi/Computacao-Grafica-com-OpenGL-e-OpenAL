@@ -5,16 +5,23 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+std::string ds =
+    #ifdef _WIN32
+        "\\";
+    #else
+        "/";
+    #endif
 
-void Modelo::importarModelo(std::string model, std::string ds)
+void Modelo::importarModelo(std::string folder, std::string model)
 {
+    this->nome = model;
     // Modelo
     std::stringstream obj;
-    obj << model << ds << model << ".obj";
+    obj << folder << ds << model << ".obj";
 
     // Materiais
     std::stringstream mtl;
-    mtl << model << ds << model << ".mtl";
+    mtl << folder << ds << model << ".mtl";
 
     this->membros.clear();
 
@@ -135,7 +142,7 @@ void Modelo::importarModelo(std::string model, std::string ds)
         std::string a;
 
         if (!(iss >> a)) {
-            // std::cout << "Erro \n";
+            std::cout << "Erro \n";
             // break;
         } // error
         if (a == "newmtl") {
@@ -188,3 +195,128 @@ void Modelo::importarModelo(std::string model, std::string ds)
 
     std::cout << "EOF material\n";
 }
+
+void Modelo::renderizar() {
+
+    glPushMatrix();
+        glTranslatef(this->posX, this->posY, this->posZ); // vai para o meio do osso
+        glRotatef(this->angX, 1, 0, 0); // vai para o meio do osso
+        glRotatef(this->angY, 0, 1, 0); // vai para o meio do osso
+        glRotatef(this->angZ, 0, 0, 1); // vai para o meio do osso
+
+        for (int i = 0; i < this->membros.size(); i++) {
+
+            if (this->membros[i].textura_nome != "") {
+                glColor3f(1.0, 1.0, 1.0);
+
+                glEnable(GL_TEXTURE_2D);
+                glBindTexture(GL_TEXTURE_2D, this->membros[i].textura);
+            } else {
+                float r = this->membros[i].colR;
+                float g = this->membros[i].colG;
+                float b = this->membros[i].colB;
+
+                glColor3f(r, g, b);
+            }
+            // percorre faces
+            for (int j = 0; j < this->membros[i].faces.size(); j++) {
+                glBegin(GL_POLYGON);
+
+                // percorre pontos
+                for (int k = 0; k < this->membros[i].faces[j].pontos.size(); k++) {
+                    // id - 1 pois o objeto comeca em 1
+                    float xv = this->v[this->membros[i].faces[j].pontos[k].idVert - 1].x;
+                    float yv = this->v[this->membros[i].faces[j].pontos[k].idVert - 1].y;
+                    float zv = this->v[this->membros[i].faces[j].pontos[k].idVert - 1].z;
+
+                    float xn = this->vn[this->membros[i].faces[j].pontos[k].idNorm - 1].x;
+                    float yn = this->vn[this->membros[i].faces[j].pontos[k].idNorm - 1].y;
+                    float zn = this->vn[this->membros[i].faces[j].pontos[k].idNorm - 1].z;
+
+                    float xt = this->vt[this->membros[i].faces[j].pontos[k].idText - 1].x;
+                    float yt = this->vt[this->membros[i].faces[j].pontos[k].idText - 1].y;
+
+                    glTexCoord2f(xt, yt);
+                    glNormal3f(xv, yv, zv);
+                    glVertex3f(xv, yv, zv);
+                }
+                glEnd();
+            }
+            if (this->membros[i].textura_nome != "") {
+                glDisable(GL_TEXTURE_2D);
+                glColor3f(1.0, 1.0, 1.0);
+            }
+        }
+
+        for ( int i = 0; i < this->filhos.size(); i++ ) {
+            this->filhos[i].renderizar();
+        }
+
+    glPopMatrix();
+}
+
+// Load Bitmaps And Convert To Textures
+int Modelo::LoadGLTextures()
+{
+    for (int i = 0; i < this->membros.size(); i++) {
+        if (this->membros[i].textura_nome != "") {
+            std::stringstream texture_file;
+            texture_file << this->folder << ds << this->membros[i].textura_nome;
+            // std::cout << texture_file.str() << "\n";
+            /* load an image file directly as a new OpenGL texture */
+            this->membros[i].textura = SOIL_load_OGL_texture(
+                texture_file.str().c_str(), SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID,
+                SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT | SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_TEXTURE_REPEATS);
+
+            if (this->membros[i].textura == 0) {
+                std::cout << "ERRO: falha ao ler textura " << texture_file.str()
+                          << "\n";
+            }
+        }
+        // Typical Texture Generation Using Data From The Bitmap
+        glBindTexture(GL_TEXTURE_2D, this->membros[i].textura);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //
+        // glEnable(GL_TEXTURE_2D);			    // Enable Texture Mapping (
+        // NEW ) glShadeModel(GL_SMOOTH);			    // Enable Smooth
+        // Shading
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black Background
+        glClearDepth(1.0f); // Depth Buffer Setup
+        glEnable(GL_DEPTH_TEST); // Enables Depth Testing
+        // glDepthFunc(GL_LEQUAL);					// The Type Of
+        // Depth Testing To Do
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Really Nice Perspective Calculations
+    }
+
+    for ( int i = 0; i < this->filhos.size(); i++ ) {
+        this->filhos[i].LoadGLTextures();
+    }
+
+    return true; // Return Success
+}
+
+void Modelo::animar(int animation) {
+    //std::cout << animations[animation].frames[frame] << "\n";
+    for (int frame = 0; frame < this->animations[animation].frames.size(); frame++ ) {
+
+        this->angX = this->animations[animation].frames[frame].rotX; // angulos
+        this->angY = this->animations[animation].frames[frame].rotY;
+        this->angZ = this->animations[animation].frames[frame].rotZ;
+
+        this->posX = this->animations[animation].frames[frame].rotX; // posicao
+        this->posY = this->animations[animation].frames[frame].rotY;
+        this->posZ = this->animations[animation].frames[frame].rotZ;
+
+        this->scaX = this->animations[animation].frames[frame].scaX; // escala
+        this->scaY = this->animations[animation].frames[frame].scaY;
+        this->scaZ = this->animations[animation].frames[frame].scaZ;
+
+        glutPostRedisplay();
+    }
+
+    for (int i = 0; i < this->filhos.size(); i++ ) {
+        this->filhos[i].animar(animation);
+    }
+
+};

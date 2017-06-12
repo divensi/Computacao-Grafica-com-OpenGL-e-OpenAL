@@ -1,14 +1,12 @@
-#include <string>
+#include "Face.h"
 #include <GL/gl.h>
 #include <GL/glut.h>
-#include "Face.h"
+#include <string>
 
 class Membro {
 public:
-    Membro() {
-        // colR = 0.996078;
-        // colG = 0.756863;
-        // colB = 0.474510;
+    Membro()
+    {
         colR = 0;
         colG = 0;
         colB = 0;
@@ -45,7 +43,6 @@ public:
 
     GLuint textura; // as texturas pra valer
 
-
     std::string getNome() { return nome; };
     void setNome(std::string nome) { nome = this->nome; };
 
@@ -59,10 +56,9 @@ public:
 
     std::string nome;
     std::string useMaterial;
-
 };
 
-void Membro::desenha() {
+void Membro::desenha(){
     //glPushMatrix(); // salva o contexto(1)
 
     //glPopMatrix(); // restaura o contexto(1)

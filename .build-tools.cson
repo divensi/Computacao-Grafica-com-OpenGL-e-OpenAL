@@ -6,8 +6,33 @@ providers: [
         {
           project: "/home/divensi/Projects/CG/reader"
           source: "/home/divensi/Projects/CG/reader/.build-tools.cson"
+          name: "Run "
+          command: "gnome-terminal -e ./%e"
+          wd: "."
+          env: {}
+          modifier:
+            wildcards: {}
+          environment:
+            name: "child_process"
+            config:
+              stdoe: "both"
+          stdout:
+            pipeline: []
+          stderr:
+            pipeline: []
+          output:
+            console:
+              close_success: true
+              queue_in_buffer: true
+              colors: true
+              stdin: true
+          version: 2
+        }
+        {
+          project: "/home/divensi/Projects/CG/reader"
+          source: "/home/divensi/Projects/CG/reader/.build-tools.cson"
           name: "Clang Build"
-          command: "clang++ main.cpp -lGL -lGLU -lglut -o main -lSOIL"
+          command: "clang++ main.cpp -lGL -lGLU -lglut -o main -lSOIL -std=c++11"
           wd: "."
           env: {}
           modifier:
@@ -30,31 +55,6 @@ providers: [
             linter:
               no_trace: false
               immediate: true
-          version: 2
-        }
-        {
-          project: "/home/divensi/Projects/CG/reader"
-          source: "/home/divensi/Projects/CG/reader/.build-tools.cson"
-          name: "Run "
-          command: "gnome-terminal -e ./%e"
-          wd: "."
-          env: {}
-          modifier:
-            wildcards: {}
-          environment:
-            name: "child_process"
-            config:
-              stdoe: "both"
-          stdout:
-            pipeline: []
-          stderr:
-            pipeline: []
-          output:
-            console:
-              close_success: true
-              queue_in_buffer: true
-              colors: true
-              stdin: true
           version: 2
         }
       ]

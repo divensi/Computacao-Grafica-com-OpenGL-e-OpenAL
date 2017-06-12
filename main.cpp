@@ -4,91 +4,101 @@
 #include <GL/glut.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
+#include "class/Mario.cpp"
 
 void init(void);
 void display(void);
 void keyboard(unsigned char key, int x, int y);
 void reshape(int w, int h);
 
-GLfloat cameraX = 0;
-GLfloat cameraY = 0;
-GLfloat cameraZ = 0;
-GLfloat angle, fAspect;
+GLfloat obsX, obsY, obsZ, obsX_ini, obsY_ini, obsZ_ini;
+GLfloat rotX, rotY, rotX_ini, rotY_ini;
+GLfloat angle;
+GLfloat fAspect;
+int x_ini, y_ini, bot;
 
 static GLint eixoy, eixox;
 GLint largura, altura;
 GLint xAux, yAux;
 static GLfloat spin = 0.0;
 
-// modelo do mario
-std::string model = "Mario64";
+Mario mario = Mario();
 
-// Gambiarra para o separador de diretório funcionar tanto em windows quanto no
-// Linux
-std::string ds =
-#ifdef _WIN32
-    "\\";
-#else
-    "/";
-#endif
-
-// std::string folder = "castelo";
-// std::string model = "princessCastle";
-
-Modelo rotBox = Modelo(model, ds); // mario
-
-// Load Bitmaps And Convert To Textures
-int LoadGLTextures()
+void desenhaChao(void)
+#define TAM 5
+#define D 2
 {
-    for (int i = 0; i < rotBox.membros.size(); i++) {
-        if (rotBox.membros[i].textura_nome != "") {
-            std::stringstream texture_file;
-            texture_file << model << ds << rotBox.membros[i].textura_nome;
-            // std::cout << texture_file.str() << "\n";
-            /* load an image file directly as a new OpenGL texture */
-            rotBox.membros[i].textura = SOIL_load_OGL_texture(
-                texture_file.str().c_str(), SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID,
-                SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT | SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_TEXTURE_REPEATS);
-
-            if (rotBox.membros[i].textura == 0) {
-                std::cout << "ERRO: falha ao ler textura " << texture_file.str()
-                          << "\n";
-            }
+    // Flags para determinar a cor de cada quadrado
+    bool flagx, flagz;
+    // Define a normal apontando para cima
+    glNormal3f(0, 1, 0);
+    glBegin(GL_QUADS);
+    flagx = false;
+    // X varia de -TAM a TAM, de D em D
+    for (float x = 0; x < TAM; x += D) {
+        // Flagx determina a cor inicial
+        if (flagx)
+            flagz = false;
+        else
+            flagz = true;
+        // Z varia de -TAM a TAM, de D em D
+        for (float z = 0; z < TAM; z += D) {
+            // Escolhe cor
+            if (flagz)
+                glColor3f(0.4, 0.4, 0.4);
+            else
+                glColor3f(1, 1, 1);
+            // E desenha o quadrado
+            glVertex3f(x, 0, z);
+            glVertex3f(x + D, 0, z);
+            glVertex3f(x + D, 0, z + D);
+            glVertex3f(x, 0, z + D);
+            // Alterna cor
+            flagz = !flagz;
         }
-        // Typical Texture Generation Using Data From The Bitmap
-        glBindTexture(GL_TEXTURE_2D, rotBox.membros[i].textura);
-        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        //
-        // glEnable(GL_TEXTURE_2D);			    // Enable Texture Mapping (
-        // NEW ) glShadeModel(GL_SMOOTH);			    // Enable Smooth
-        // Shading
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black Background
-        glClearDepth(1.0f); // Depth Buffer Setup
-        glEnable(GL_DEPTH_TEST); // Enables Depth Testing
-        // glDepthFunc(GL_LEQUAL);					// The Type Of
-        // Depth Testing To Do
-        glHint(GL_PERSPECTIVE_CORRECTION_HINT,
-            GL_NICEST); // Really Nice Perspective Calculations
+        // A cada coluna, alterna cor inicial
+        flagx = !flagx;
     }
-
-    return true; // Return Success
+    glEnd();
 }
 
-void init(void)
+// Fun��o usada para especificar a posi��o do observador virtual
+void PosicionaObservador(void)
 {
-    // Define a cor de fundo da janela de visualiza��o como branca
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    // Especifica sistema de coordenadas do modelo
+    glMatrixMode(GL_MODELVIEW);
+    // Inicializa sistema de coordenadas do modelo
+    glLoadIdentity();
+    // Posiciona e orienta o observador
+    glTranslatef(-obsX, -obsY, -obsZ);
+    glRotatef(rotX, 1, 0, 0);
+    glRotatef(rotY, 0, 1, 0);
+}
 
-    // Inicializa a vari�vel que especifica o �ngulo da proje��o
-    // perspectiva
-    angle = 45;
+void desenhaOrigem(void)
+{
+    std::cout << "/* message */" << '\n';
+    glPushMatrix();
+    // Desenhas as linhas das "bordas" do cubo
+    glLineWidth(5.0f);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glBegin(GL_LINE); // frontal
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(100.0, 0.0, 0.0);
+    glEnd();
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glBegin(GL_LINE); // frontal
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(0.0, 100.0, 0.0);
+    glEnd();
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glBegin(GL_LINE); // frontal
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(0.0, 0.0, 100.0);
+    glEnd();
 
-    // Inicializa as vari�veis utilizadas para implementa��o
-    // da opera��o de pan
-    cameraX = 0.0f;
-    cameraY = 0.0f;
-    cameraZ = 0.0f;
+    glPopMatrix();
 }
 
 void EspecificaParametrosVisualizacao(void)
@@ -97,258 +107,214 @@ void EspecificaParametrosVisualizacao(void)
     glLoadIdentity();
     gluPerspective(angle, fAspect, 0.5, 500);
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(0 + cameraX, 0 + cameraY, 10 + cameraZ, 0, 0, 0, 0, 1, 0);
+    PosicionaObservador();
+}
+
+void init(void)
+{
+    // Define a cor de fundo da janela de visualizao como branca
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+    // Habilita a defini��o da cor do material a partir da cor corrente
+    glEnable(GL_COLOR_MATERIAL);
+    //Habilita o uso de ilumina��o
+    glEnable(GL_LIGHTING);
+    // Habilita as fontes de luz
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHT2);
+    // Habilita o depth-buffering
+    glEnable(GL_DEPTH_TEST);
+
+    // Inicializa a varivel que especifica o ngulo da projeo
+    // perspectiva
+    angle = 45;
+
+    rotX = 30;
+    rotY = 0;
+    obsX = obsY = 0;
+    obsZ = 20;
+
+
 }
 
 void reshape(int w, int h)
 {
-    // Para previnir uma divis�o por zero
+    // Para previnir uma diviso por zero
     if (h == 0)
         h = 1;
 
     altura = h;
     largura = w;
-    // Especifica as dimens�es da viewport
+    // Especifica as dimenses da viewport
     glViewport(0, 0, w, h);
 
-    // Calcula a corre��o de aspecto
+    // Calcula a correo de aspecto
     fAspect = (GLfloat)w / (GLfloat)h;
 
     EspecificaParametrosVisualizacao();
 }
 
-// Funeeo callback para eventos de botees do mouse
+
+// Fun��o callback para eventos de bot�es do mouse
 void GerenciaMouse(int button, int state, int x, int y)
 {
-    if (button == GLUT_LEFT_BUTTON)
-        if (state == GLUT_DOWN) { // zoom in
-            if (angle >= 10)
-                angle -= 5;
-        }
-    if (button == GLUT_RIGHT_BUTTON)
-        if (state == GLUT_DOWN) { // zoom out
-            if (angle <= 130)
-                angle += 5;
-        }
-    EspecificaParametrosVisualizacao();
+    if (state == GLUT_DOWN) {
+        // Salva os par�metros atuais
+        x_ini = x;
+        y_ini = y;
+        obsX_ini = obsX;
+        obsY_ini = obsY;
+        obsZ_ini = obsZ;
+        rotX_ini = rotX;
+        rotY_ini = rotY;
+        bot = button;
+    } else
+        bot = -1;
+}
+
+// Fun��o callback para eventos de movimento do mouse
+#define SENS_ROT 5.0
+#define SENS_OBS 10.0
+#define SENS_TRANSL 10.0
+void GerenciaMovim(int x, int y)
+{
+    // Bot�o esquerdo ?
+    if (bot == GLUT_LEFT_BUTTON) {
+        // Calcula diferen�as
+        int deltax = x_ini - x;
+        int deltay = y_ini - y;
+        // E modifica �ngulos
+        rotY = rotY_ini - deltax / SENS_ROT;
+        rotX = rotX_ini - deltay / SENS_ROT;
+    }
+    // Bot�o direito ?
+    else if (bot == GLUT_RIGHT_BUTTON) {
+        // Calcula diferen�a
+        int deltaz = y_ini - y;
+        // E modifica dist�ncia do observador
+        obsZ = obsZ_ini + deltaz / SENS_OBS;
+    }
+    // Bot�o do meio ?
+    else if (bot == GLUT_MIDDLE_BUTTON) {
+        // Calcula diferen�as
+        int deltax = x_ini - x;
+        int deltay = y_ini - y;
+        // E modifica posi��es
+        obsX = obsX_ini + deltax / SENS_TRANSL;
+        obsY = obsY_ini - deltay / SENS_TRANSL;
+    }
+    PosicionaObservador();
     glutPostRedisplay();
 }
 
 void renderizarModelos()
 {
-    for (int i = 0; i < rotBox.membros.size(); i++) {
-        glPushMatrix();
+    glPushMatrix();
+    mario.obj.renderizar();
 
-        if (rotBox.membros[i].textura_nome != "") {
-            glColor3f(1.0, 1.0, 1.0);
-
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, rotBox.membros[i].textura);
-        } else {
-            float r = rotBox.membros[i].colR;
-            float g = rotBox.membros[i].colG;
-            float b = rotBox.membros[i].colB;
-
-            glColor3f(r, g, b);
-        }
-        // percorre faces
-        for (int j = 0; j < rotBox.membros[i].faces.size(); j++) {
-            glBegin(GL_POLYGON);
-
-            // percorre pontos
-            for (int k = 0; k < rotBox.membros[i].faces[j].pontos.size(); k++) {
-                // id - 1 pois o objeto comeca em 1
-                float xv = rotBox.v[rotBox.membros[i].faces[j].pontos[k].idVert - 1].x;
-                float yv = rotBox.v[rotBox.membros[i].faces[j].pontos[k].idVert - 1].y;
-                float zv = rotBox.v[rotBox.membros[i].faces[j].pontos[k].idVert - 1].z;
-
-                float xt = rotBox.vt[rotBox.membros[i].faces[j].pontos[k].idText - 1].x;
-                float yt = rotBox.vt[rotBox.membros[i].faces[j].pontos[k].idText - 1].y;
-
-                glTexCoord2f(xt, yt);
-                glVertex3f(xv, yv, zv);
-            }
-
-            glEnd();
-        }
-        if (rotBox.membros[i].textura_nome != "") {
-            glDisable(GL_TEXTURE_2D);
-            glColor3f(1.0, 1.0, 1.0);
-        }
-
-        glPopMatrix();
-    }
-}
-
-void spinDisplay(void)
-{
-    spin = spin + 2.0;
-    if (spin > 360.0)
-        spin = spin - 360.0;
-    glutPostRedisplay();
+    glPopMatrix();
 }
 
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // bottom right: rotating perspective view
+    glViewport(0, 0, largura, altura);
+
     glPushMatrix();
 
-    // top left: top view
-    glViewport(0, altura / 2, largura / 2, altura / 2);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-12.0, 12.0, -12.0, 12.0, 1.0, 50.0);
-    gluLookAt(0.0, 20.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    renderizarModelos();
-
-    // top right: right view
-    glViewport(largura / 2, altura / 2, largura / 2, altura / 2);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-12.0, 12.0, -12.0, 12.0, 1.0, 50.0);
-    gluLookAt(20.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    renderizarModelos();
-
-    // bottom left: front view
-    glViewport(0, 0, largura / 2, altura / 2);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-12.0, 12.0, -12.0, 12.0, 1.0, 50.0);
-    gluLookAt(0.0, 0.0, 20.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    renderizarModelos();
-
-    // bottom right: rotating perspective view
-    glViewport(largura / 2, 0, largura / 2, altura / 2);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(angle, fAspect, 0.5, 500);
-    gluLookAt(0.0, 0.0, 20.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glRotatef(45.0, 1.0, 0.0, 0.0);
-
-    glRotatef(spin, 0.0, 1.0, 0.0);
     renderizarModelos();
 
     glPopMatrix();
+
+    desenhaOrigem();
+
+    desenhaChao();
+
+    EspecificaParametrosVisualizacao();
+
     glutSwapBuffers();
 }
 
-void TeclasEspeciais(int key, int x, int y)
+// Fun��o callback para tratar eventos de teclas especiais
+void TeclasEspeciais(int tecla, int x, int y)
 {
-    switch (key) {
-    case GLUT_KEY_UP: // desloca o volume de visualiza��o para cima
-        cameraY -= 0.1;
+    switch (tecla) {
+    case GLUT_KEY_LEFT:
+        mario.obj.posX += 0.1;
         break;
-    case GLUT_KEY_DOWN: // desloca o volume de visualiza��o para baixo
-        cameraY += 0.1;
+    case GLUT_KEY_RIGHT:
+        mario.obj.posX -= 0.1;
         break;
-    case GLUT_KEY_LEFT: // desloca o volume de visualiza��o para o lado
-        // esquerdo
-        cameraX += 0.1;
+    case GLUT_KEY_UP:
+        mario.obj.posZ += 0.1;
         break;
-    case GLUT_KEY_RIGHT: // desloca o volume de visualiza��o para o lado
-        // direito
-        cameraX -= 0.1;
+    case GLUT_KEY_DOWN:
+        mario.obj.posZ -= 0.1;
         break;
-    case GLUT_KEY_PAGE_UP: // desloca o volume de visualiza��o para frente
-        cameraZ -= 0.1;
+    case GLUT_KEY_PAGE_UP:
+        mario.obj.posY -= 2;
         break;
-    case GLUT_KEY_PAGE_DOWN: // desloca o volume de visualiza��o para tr�s
-        cameraZ += 0.1;
+    case GLUT_KEY_PAGE_DOWN:
+        mario.obj.posY += 2;
+        break;
+    case GLUT_KEY_HOME:
+        if (angle >= 10)
+            angle -= 5;
+        break;
+    case GLUT_KEY_END:
+        if (angle <= 150)
+            angle += 5;
         break;
     }
-    EspecificaParametrosVisualizacao();
+    PosicionaObservador();
     glutPostRedisplay();
 }
 
-void keyboard(unsigned char key, int x, int y)
+// Fun��o callback chamada para gerenciar eventos de teclas normais (ESC)
+void Teclado(unsigned char tecla, int x, int y)
 {
-    switch (key) {
-    case 27:
+    if (tecla == 27) // ESC ?
         exit(0);
-        break;
-    case 'a':
-        printf("%d, %d\n", x, y);
-        break;
-    case 'y':
-        eixoy = (eixoy + 5) % 360;
-        glutPostRedisplay();
-        break;
-    case 'Y':
-        eixoy = (eixoy - 5) % 360;
-        glutPostRedisplay();
-        break;
-    case 'x':
-        eixox = (eixox + 5) % 360;
-        glutPostRedisplay();
-        break;
-    case 'X':
-        eixox = (eixox - 5) % 360;
-        glutPostRedisplay();
-        break;
-    case '1':
-        for (int i = 0; i < rotBox.membros.size(); i++) {
-            std::cout << i << " - " << rotBox.membros[i].textura_nome << "\n";
-            if (rotBox.membros[i].textura_nome == "bowserCastle.png") {
-                rotBox.membros[i].textura_nome = "castle.png";
-            }
-        }
-        LoadGLTextures();
-        glutPostRedisplay();
-        break;
-    case '2':
-        for (int i = 0; i < rotBox.membros.size(); i++) {
-            std::cout << i << " - " << rotBox.membros[i].textura_nome << "\n";
-            if (rotBox.membros[i].textura_nome == "castle.png") {
-                rotBox.membros[i].textura_nome = "bowserCastle.png";
-            }
-        }
-        LoadGLTextures();
-        glutPostRedisplay();
-        break;
-    case 'p':
-        glLoadIdentity();
-        gluPerspective(65.0, (GLfloat)largura / (GLfloat)altura, 20.0, 120.0);
-        gluLookAt(0, 0, -30, 0, 0, 0, 0, 1, 0);
-        glutPostRedisplay();
-        break;
-    case 'o':
-        glLoadIdentity();
-        glOrtho(-5, 5, -5, 5, -5, 5);
-        glutPostRedisplay();
-        break;
-    }
+    if (tecla >= '0' && tecla <= '2')
+        mario.obj.animar(0);
 }
 
 int main(int argc, char** argv)
 {
+
+
+    std::cout << "Test";
     glutInit(&argc, argv);
 
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(800, 800);
-    glutInitWindowPosition(100, 100);
-    glutCreateWindow(argv[0]);
-    init();
-    glutDisplayFunc(display);
-    glutKeyboardFunc(keyboard);
-    glutSpecialFunc(TeclasEspeciais);
-    glutMouseFunc(GerenciaMouse);
-    glutIdleFunc(spinDisplay);
+    glutInitWindowPosition(5, 5);
+    glutCreateWindow("Maario");
 
-    if (!LoadGLTextures()) {
+    glutDisplayFunc(display);
+
+    // Registra a fun��o callback para tratamento das teclas normais
+    glutKeyboardFunc(Teclado);
+
+    // Registra a fun��o callback para tratamento das teclas especiais
+    glutSpecialFunc(TeclasEspeciais);    // Registra a fun��o callback para eventos de bot�es do mouse
+
+    glutMouseFunc(GerenciaMouse);
+
+    // Registra a fun��o callback para eventos de movimento do mouse
+    glutMotionFunc(GerenciaMovim);
+    // glutIdleFunc(spinDisplay);
+
+    if (!mario.obj.LoadGLTextures()) {
         return 1; // If Texture Didn't Load Return FALSE
     }
-
     glutReshapeFunc(reshape);
+
+    init();
+
     glutMainLoop();
 
     return 0;
