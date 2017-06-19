@@ -18,10 +18,14 @@ public:
         scaY = 0;
         scaZ = 0;
 
+        acao = "idle";
+
         this->importarHierarquia();
     }
 
     Modelo obj;
+
+    std::string acao;
 
     void importarHierarquia();
 

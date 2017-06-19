@@ -18,12 +18,19 @@ GLfloat angle;
 GLfloat fAspect;
 int x_ini, y_ini, bot;
 
-static GLint eixoy, eixox;
+//static GLint eixoy, eixox;
 GLint largura, altura;
 GLint xAux, yAux;
-static GLfloat spin = 0.0;
+//static GLfloat spin = 0.0;
 
 Mario mario = Mario();
+
+//TODO variaveis de teste
+GLfloat marioRotX = 0, marioRotY = 0, marioRotZ = 0;
+GLfloat marioScaX = 0, marioScaY = 0, marioScaZ = 0;
+GLfloat marioPosX = 0, marioPosY = 0, marioPosZ = 0;
+unsigned int parte = 0;
+unsigned int acao = 0;
 
 void desenhaChao(void)
 #define TAM 5
@@ -63,7 +70,7 @@ void desenhaChao(void)
     glEnd();
 }
 
-// Fun��o usada para especificar a posi��o do observador virtual
+// Funo usada para especificar a posio do observador virtual
 void PosicionaObservador(void)
 {
     // Especifica sistema de coordenadas do modelo
@@ -78,7 +85,6 @@ void PosicionaObservador(void)
 
 void desenhaOrigem(void)
 {
-    std::cout << "/* message */" << '\n';
     glPushMatrix();
     // Desenhas as linhas das "bordas" do cubo
     glLineWidth(5.0f);
@@ -115,9 +121,9 @@ void init(void)
     // Define a cor de fundo da janela de visualizao como branca
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-    // Habilita a defini��o da cor do material a partir da cor corrente
+    // Habilita a definio da cor do material a partir da cor corrente
     glEnable(GL_COLOR_MATERIAL);
-    //Habilita o uso de ilumina��o
+    //Habilita o uso de iluminao
     glEnable(GL_LIGHTING);
     // Habilita as fontes de luz
     glEnable(GL_LIGHT0);
@@ -156,11 +162,11 @@ void reshape(int w, int h)
 }
 
 
-// Fun��o callback para eventos de bot�es do mouse
+// Funo callback para eventos de botes do mouse
 void GerenciaMouse(int button, int state, int x, int y)
 {
     if (state == GLUT_DOWN) {
-        // Salva os par�metros atuais
+        // Salva os parmetros atuais
         x_ini = x;
         y_ini = y;
         obsX_ini = obsX;
@@ -173,39 +179,39 @@ void GerenciaMouse(int button, int state, int x, int y)
         bot = -1;
 }
 
-// Fun��o callback para eventos de movimento do mouse
+// Funo callback para eventos de movimento do mouse
 #define SENS_ROT 5.0
 #define SENS_OBS 10.0
 #define SENS_TRANSL 10.0
 void GerenciaMovim(int x, int y)
 {
-    // Bot�o esquerdo ?
+    // Boto esquerdo ?
     if (bot == GLUT_LEFT_BUTTON) {
-        // Calcula diferen�as
+        // Calcula diferenas
         int deltax = x_ini - x;
         int deltay = y_ini - y;
-        // E modifica �ngulos
+        // E modifica ngulos
         rotY = rotY_ini - deltax / SENS_ROT;
         rotX = rotX_ini - deltay / SENS_ROT;
     }
-    // Bot�o direito ?
+    // Boto direito ?
     else if (bot == GLUT_RIGHT_BUTTON) {
-        // Calcula diferen�a
+        // Calcula diferena
         int deltaz = y_ini - y;
-        // E modifica dist�ncia do observador
+        // E modifica distncia do observador
         obsZ = obsZ_ini + deltaz / SENS_OBS;
     }
-    // Bot�o do meio ?
+    // Boto do meio ?
     else if (bot == GLUT_MIDDLE_BUTTON) {
-        // Calcula diferen�as
+        // Calcula diferenas
         int deltax = x_ini - x;
         int deltay = y_ini - y;
-        // E modifica posi��es
+        // E modifica posies
         obsX = obsX_ini + deltax / SENS_TRANSL;
         obsY = obsY_ini - deltay / SENS_TRANSL;
     }
     PosicionaObservador();
-    glutPostRedisplay();
+    //glutPostRedisplay();
 }
 
 void renderizarModelos()
@@ -229,7 +235,7 @@ void display(void)
 
     glPopMatrix();
 
-    desenhaOrigem();
+    //desenhaOrigem();
 
     desenhaChao();
 
@@ -238,7 +244,7 @@ void display(void)
     glutSwapBuffers();
 }
 
-// Fun��o callback para tratar eventos de teclas especiais
+// Funo callback para tratar eventos de teclas especiais
 void TeclasEspeciais(int tecla, int x, int y)
 {
     switch (tecla) {
@@ -270,41 +276,145 @@ void TeclasEspeciais(int tecla, int x, int y)
         break;
     }
     PosicionaObservador();
-    glutPostRedisplay();
+    //glutPostRedisplay();
 }
 
-// Fun��o callback chamada para gerenciar eventos de teclas normais (ESC)
+unsigned int frame = 0;
+unsigned int veloc = 8;
+unsigned int passo = 0;
+
+void animate(int value) {
+
+    if (passo < veloc) {
+        passo += 1;
+    } else {
+        if (frame < mario.obj.animations[0].frames.size() - 1) {
+            frame += 1;
+        } else {
+            frame = 0;
+        }
+        passo = 0;
+    }
+
+    for ( unsigned int passo = 0; passo < veloc; passo++ ) {
+        mario.obj.animar(0, frame, passo, veloc);
+    }
+}
+
+// Funo callback chamada para gerenciar eventos de teclas normais (ESC)
 void Teclado(unsigned char tecla, int x, int y)
 {
     if (tecla == 27) // ESC ?
         exit(0);
-    if (tecla >= '0' && tecla <= '2')
-        mario.obj.animar(0);
+    if (tecla >= '0' && tecla <= '2') {
+       for (unsigned int i = 0; i < mario.obj.animations[0].frames.size(); i++) {
+            glutTimerFunc(i*50, animate, 1);
+       }
+    }
+    if (tecla == 'a') {
+        acao++;
+        if (acao == 2)
+            acao = 0;
+        if (acao == 0)
+            std::cout << "parte = Rotacao" << '\n';
+        if (acao == 1)
+            std::cout << "parte = Posicao" << '\n';
+        if (acao == 2)
+            std::cout << "parte = Escala" << '\n';
+    }
+    if (tecla == 'x') {
+        if (acao == 0)
+            mario.obj.filhos[parte].rotX = ++marioRotX;
+        if (acao == 1)
+            mario.obj.filhos[parte].posX = ++marioPosX/10;
+        if (acao == 2)
+            mario.obj.filhos[parte].scaX = ++marioScaX;
+    }
+    if (tecla == 'X') {
+        if (acao == 0)
+            mario.obj.filhos[parte].rotX = --marioRotX;
+        if (acao == 1)
+            mario.obj.filhos[parte].posX = --marioPosX/10;
+        if (acao == 2)
+            mario.obj.filhos[parte].scaX = --marioScaX;
+    }
+    if (tecla == 'y') {
+        if (acao == 0)
+            mario.obj.filhos[parte].rotY = ++marioRotY;
+        if (acao == 1)
+            mario.obj.filhos[parte].posY = ++marioPosY/10;
+        if (acao == 2)
+            mario.obj.filhos[parte].scaY = ++marioScaY;
+    }
+    if (tecla == 'Y') {
+        if (acao == 0)
+            mario.obj.filhos[parte].rotY = --marioRotY;
+        if (acao == 1)
+            mario.obj.filhos[parte].posY = --marioPosY/10;
+        if (acao == 2)
+            mario.obj.filhos[parte].scaY = --marioScaY;
+    }
+    if (tecla == 'z') {
+        if (acao == 0)
+            mario.obj.filhos[parte].rotZ = ++marioRotZ;
+        if (acao == 1)
+            mario.obj.filhos[parte].posZ = ++marioPosZ/10;
+        if (acao == 2)
+            mario.obj.filhos[parte].scaZ = ++marioScaZ;
+    }
+    if (tecla == 'Z') {
+        if (acao == 0)
+            mario.obj.filhos[parte].rotZ = --marioRotZ;
+        if (acao == 1)
+            mario.obj.filhos[parte].posZ = --marioPosZ/10;
+        if (acao == 2)
+            mario.obj.filhos[parte].scaZ = --marioScaZ;
+    }
+
+    if (tecla == 's') {
+        std::cout << mario.obj.filhos[parte].nome << " = "
+            << "\n" << mario.obj.filhos[parte].posX
+            << ", " << mario.obj.filhos[parte].posY
+            << ", " << mario.obj.filhos[parte].posZ
+            << ", " << mario.obj.filhos[parte].rotX%360
+            << ", " << mario.obj.filhos[parte].rotY%360
+            << ", " << mario.obj.filhos[parte].rotZ%360
+            << ", " << mario.obj.filhos[parte].scaX
+            << ", " << mario.obj.filhos[parte].scaY
+            << ", " << mario.obj.filhos[parte].scaZ
+            << '\n';
+        tecla = 0;
+    }
+}
+
+void timer(int value) {
+    // em teoria limita
+    glutPostRedisplay();
+    glutTimerFunc(16, timer, 1);
 }
 
 int main(int argc, char** argv)
 {
-
-
-    std::cout << "Test";
     glutInit(&argc, argv);
 
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(800, 800);
-    glutInitWindowPosition(5, 5);
-    glutCreateWindow("Maario");
+    glutInitWindowPosition(900, 5);
+    glutCreateWindow("Mario");
+
+    glutTimerFunc(300, timer, 1);
 
     glutDisplayFunc(display);
 
-    // Registra a fun��o callback para tratamento das teclas normais
+    // Registra a funo callback para tratamento das teclas normais
     glutKeyboardFunc(Teclado);
 
-    // Registra a fun��o callback para tratamento das teclas especiais
-    glutSpecialFunc(TeclasEspeciais);    // Registra a fun��o callback para eventos de bot�es do mouse
+    // Registra a funo callback para tratamento das teclas especiais
+    glutSpecialFunc(TeclasEspeciais);    // Registra a funo callback para eventos de botes do mouse
 
     glutMouseFunc(GerenciaMouse);
 
-    // Registra a fun��o callback para eventos de movimento do mouse
+    // Registra a funo callback para eventos de movimento do mouse
     glutMotionFunc(GerenciaMovim);
     // glutIdleFunc(spinDisplay);
 

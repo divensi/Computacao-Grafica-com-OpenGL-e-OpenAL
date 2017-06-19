@@ -9,9 +9,9 @@ class Modelo {
 public:
     Modelo()
     {
-        this->angX = 0; // angulos
-        this->angY = 0;
-        this->angZ = 0;
+        this->rotX = 0; // angulos
+        this->rotY = 0;
+        this->rotZ = 0;
 
         this->posX = 0; // posicao
         this->posY = 0;
@@ -25,9 +25,9 @@ public:
     }
     Modelo(std::string folder, std::string model)
     {
-        this->angX = 0; // angulos
-        this->angY = 0;
-        this->angZ = 0;
+        this->rotX = 0; // angulos
+        this->rotY = 0;
+        this->rotZ = 0;
 
         this->posX = 0; // posicao
         this->posY = 0;
@@ -43,11 +43,11 @@ public:
     }
     Modelo(std::string folder, std::string model,
         float posX, float posY, float posZ,
-        float angX, float angY, float angZ)
+        float rotX, float rotY, float rotZ)
     {
-        this->angX = angX; // posicao
-        this->angY = angY;
-        this->angZ = angZ;
+        this->rotX = rotX; // posicao
+        this->rotY = rotY;
+        this->rotZ = rotZ;
 
         this->posX = posX; // posicao
         this->posY = posY;
@@ -74,7 +74,7 @@ public:
 
     void renderizar();
 
-    void animar(int animation);
+    void animar(int animation, int frame, int passo, int veloc);
 
     int LoadGLTextures();
 
@@ -85,9 +85,9 @@ public:
     float scaY;
     float scaZ;
 
-    float angX;
-    float angY;
-    float angZ;
+    int rotX;
+    int rotY;
+    int rotZ;
 
     float posX;
     float posY;

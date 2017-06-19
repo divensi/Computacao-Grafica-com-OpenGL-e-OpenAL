@@ -15,24 +15,55 @@ public:
         scaZ = 1;
     };
 
-    Frame(GLfloat posX, GLfloat posY, GLfloat posZ,
-          GLfloat rotX, GLfloat rotY, GLfloat rotZ,
+    Frame(GLint rotX, GLint rotY, GLint rotZ,
+          GLfloat posX, GLfloat posY, GLfloat posZ,
           GLfloat scaX, GLfloat scaY, GLfloat scaZ)
     {
-        this->posX = posX;
-        this->posY = posY;
-        this->posZ = posZ;
-
         this->rotX = rotX;
         this->rotY = rotY;
         this->rotZ = rotZ;
+
+        this->posX = posX;
+        this->posY = posY;
+        this->posZ = posZ;
 
         this->scaX = scaX;
         this->scaY = scaY;
         this->scaZ = scaZ;
     }
 
+    Frame(GLint rotX, GLint rotY, GLint rotZ,
+          GLfloat posX, GLfloat posY, GLfloat posZ)
+    {
+        this->rotX = rotX;
+        this->rotY = rotY;
+        this->rotZ = rotZ;
+
+        this->posX = posX;
+        this->posY = posY;
+        this->posZ = posZ;
+
+        this->scaX = 1;
+        this->scaY = 1;
+        this->scaZ = 1;
+    }
+
+    Frame(GLint rotX, GLint rotY, GLint rotZ)
+    {
+        this->rotX = rotX;
+        this->rotY = rotY;
+        this->rotZ = rotZ;
+
+        this->posX = 0;
+        this->posY = 0;
+        this->posZ = 0;
+
+        this->scaX = 1;
+        this->scaY = 1;
+        this->scaZ = 1;
+    }
+
+    GLint rotX, rotY, rotZ;
     GLfloat posX, posY, posZ;
-    GLfloat rotX, rotY, rotZ;
     GLfloat scaX, scaY, scaZ;
 };
