@@ -255,6 +255,7 @@ void TeclasEspeciais(int tecla, int x, int y)
         mario.obj.posX -= 0.1;
         break;
     case GLUT_KEY_UP:
+        mario.obj.animacao = 0;
         mario.obj.posZ += 0.1;
         break;
     case GLUT_KEY_DOWN:
@@ -276,7 +277,6 @@ void TeclasEspeciais(int tecla, int x, int y)
         break;
     }
     PosicionaObservador();
-    //glutPostRedisplay();
 }
 
 unsigned int frame = 0;
@@ -287,18 +287,22 @@ void animate(int value) {
 
     if (passo < veloc) {
         passo += 1;
+
+        for ( unsigned int passo = 0; passo < veloc; passo++ ) {
+            mario.obj.animar(0, frame, veloc);
+        }
+
     } else {
-        if (frame < mario.obj.animations[0].frames.size() - 1) {
+
+        if (frame < mario.obj.animations[mario.obj.animacao].frames.size() - 1) {
             frame += 1;
         } else {
             frame = 0;
         }
         passo = 0;
+
     }
 
-    for ( unsigned int passo = 0; passo < veloc; passo++ ) {
-        mario.obj.animar(0, frame, passo, veloc);
-    }
 }
 
 // Funo callback chamada para gerenciar eventos de teclas normais (ESC)
@@ -307,7 +311,7 @@ void Teclado(unsigned char tecla, int x, int y)
     if (tecla == 27) // ESC ?
         exit(0);
     if (tecla >= '0' && tecla <= '2') {
-       for (unsigned int i = 0; i < mario.obj.animations[0].frames.size(); i++) {
+       for (unsigned int i = 0; i <= mario.obj.animations[0].frames.size() * veloc; i++) {
             glutTimerFunc(i*50, animate, 1);
        }
     }

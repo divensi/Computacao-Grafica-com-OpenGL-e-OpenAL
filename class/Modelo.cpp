@@ -297,12 +297,12 @@ int Modelo::LoadGLTextures()
     return true; // Return Success
 }
 
-void Modelo::animar(int animation, int frame, int passo, int veloc) {
+void Modelo::animar(int animation, int frame, int veloc) {
     std::cout << "animation " << this->animations[animation].frames.size() <<  ":" << frame << '\n';
 
-    this->rotX  = (this->rotX + this->animations[animation].frames[frame].rotX/veloc)%360; // angulos
-    this->rotY  = (this->rotY + this->animations[animation].frames[frame].rotY/veloc)%360;
-    this->rotZ  = (this->rotZ + this->animations[animation].frames[frame].rotZ/veloc)%360;
+    this->rotX  = this->rotX + (this->animations[animation].frames[frame].rotX/veloc); // angulos
+    this->rotY  = this->rotY + (this->animations[animation].frames[frame].rotY/veloc);
+    this->rotZ  = this->rotZ + (this->animations[animation].frames[frame].rotZ/veloc);
 
     this->posX += this->animations[animation].frames[frame].posX/veloc; // posicao
     this->posY += this->animations[animation].frames[frame].posY/veloc;
@@ -315,6 +315,6 @@ void Modelo::animar(int animation, int frame, int passo, int veloc) {
     std::cout << "(" << this->posX << ", " << this->posY << ", " << this->posZ << ") - (" << this->rotX << ", " << this->rotY << ", " << this->rotZ <<")\n";
 
     for (unsigned int i = 0; i < this->filhos.size(); i++ ) {
-        this->filhos[i].animar(animation, frame, passo, veloc);
+        this->filhos[i].animar(animation, frame, veloc);
     }
 };

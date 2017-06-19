@@ -91,10 +91,10 @@ void Mario::importarHierarquia(){
     left_Leg_Lower.animations.push_back(anime);
 
     anime.frames.clear();
-    anime.frames.push_back(Frame( -10, 000, 000));
+    anime.frames.push_back(Frame( +10, 000, 000));
     anime.frames.push_back(Frame( -10, 000, 000));
     anime.frames.push_back(Frame( +10, 000, 000));
-    anime.frames.push_back(Frame( +10, 000, 000));
+    anime.frames.push_back(Frame( -10, 000, 000));
     left_Leg_Foot.animations.push_back(anime);
 
     anime.frames.clear();
@@ -106,15 +106,15 @@ void Mario::importarHierarquia(){
 
     anime.frames.clear();
     anime.frames.push_back(Frame( +05, 000, 000));
+    anime.frames.push_back(Frame( -05, 000, 000));
+    anime.frames.push_back(Frame( -05, 000, 000));
     anime.frames.push_back(Frame( +05, 000, 000));
-    anime.frames.push_back(Frame( -05, 000, 000));
-    anime.frames.push_back(Frame( -05, 000, 000));
     right_Leg_Lower.animations.push_back(anime);
 
     anime.frames.clear();
     anime.frames.push_back(Frame( +10, 000, 000));
-    anime.frames.push_back(Frame( +10, 000, 000));
     anime.frames.push_back(Frame( -10, 000, 000));
+    anime.frames.push_back(Frame( +10, 000, 000));
     anime.frames.push_back(Frame( -10, 000, 000));
     right_Leg_Foot.animations.push_back(anime);
 

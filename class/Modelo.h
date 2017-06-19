@@ -22,6 +22,8 @@ public:
         this->scaZ = 0;
 
         this->nome = "";
+
+        this->animacao = 0;
     }
     Modelo(std::string folder, std::string model)
     {
@@ -40,6 +42,8 @@ public:
         this->nome = model;
         this->folder = folder;
         this->importarModelo(folder, model);
+
+        this->animacao = 0;
     }
     Modelo(std::string folder, std::string model,
         float posX, float posY, float posZ,
@@ -60,6 +64,9 @@ public:
         this->nome = model;
         this->folder = folder;
         this->importarModelo(folder, model);
+
+        this->animacao = 0;
+
     }
 
     std::vector<Vertice> v; // vertices
@@ -70,11 +77,13 @@ public:
     std::vector<Modelo> filhos;
     std::vector<Animation> animations;
 
+    int animacao;
+
     void importarModelo(std::string folder, std::string model);
 
     void renderizar();
 
-    void animar(int animation, int frame, int passo, int veloc);
+    void animar(int animation, int frame, int veloc);
 
     int LoadGLTextures();
 
