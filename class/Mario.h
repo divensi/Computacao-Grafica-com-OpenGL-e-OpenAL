@@ -45,15 +45,16 @@ public:
 
     unsigned int frame = 0;
     unsigned int veloc = 8;
+    unsigned int accel = 1;
     unsigned int passo = 0;
 
-    void frente();
+    void frente(int aceleracao);
 
-    void esquerda();
+    void esquerda(int aceleracao);
 
-    void direita();
+    void direita(int aceleracao);
 
-    void tras();
+    void tras(int aceleracao);
 
     void pular();
 

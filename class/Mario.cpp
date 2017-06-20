@@ -17,11 +17,11 @@ void Mario::importarHierarquia(){
 
     Modelo torso                = Modelo(folder, "Torso"               , 0.0, 1.275, 0.0, 0.0, 0.0, 0.0);
     Modelo head                 = Modelo(folder, "Head"                , 0.0, 0.3, 0.1, 0.0, 0.0, 0.0);
-    Modelo left_Arm_Upper       = Modelo(folder, "Left_Arm_Upper"      , 0.4, 0.2, 0.0, 0.0, 0.0, 0.0);
-    Modelo left_Arm_Lower       = Modelo(folder, "Left_Arm_Lower"      , 0.3, 0.025,-0.1, 0.0, 0.0, 0.0);
+    Modelo left_Arm_Upper       = Modelo(folder, "Left_Arm_Upper"      , 0.4, 0.2, 0.0, 90, -40, 0);
+    Modelo left_Arm_Lower       = Modelo(folder, "Left_Arm_Lower"      , 0.3, 0.025,-0.1, 0.0, -40, 0.0);
     Modelo left_Arm_Hand        = Modelo(folder, "Left_Arm_Hand"       , 0.3, 0.0, -0.03, 0.0, 0.0, 0.0);
-    Modelo right_Arm_Upper      = Modelo(folder, "Right_Arm_Upper"     ,-0.4, 0.2, 0.0, 0.0, 0.0, 0.0);
-    Modelo right_Arm_Lower      = Modelo(folder, "Right_Arm_Lower"     ,-0.3, 0.025,-0.1, 0.0, 0.0, 0.0);
+    Modelo right_Arm_Upper      = Modelo(folder, "Right_Arm_Upper"     ,-0.4, 0.2, 0.0, 90, 40, 0);
+    Modelo right_Arm_Lower      = Modelo(folder, "Right_Arm_Lower"     ,-0.3, 0.025,-0.1, 0.0, 40, 0.0);
     Modelo right_Arm_Hand       = Modelo(folder, "Right_Arm_Hand"      ,-0.3, 0.0, -0.03, 0.0, 0.0, 0.0);
     Modelo left_Leg_Upper       = Modelo(folder, "Left_Leg_Upper"      , 0.25, -0.3,-0.1, -32,  32,  15);
     Modelo left_Leg_Lower       = Modelo(folder, "Left_Leg_Lower"      , 0.0, -0.4, 0.03, 25, 0.0, 0.0);
@@ -56,7 +56,11 @@ void Mario::importarHierarquia(){
     head.animations.push_back(empty);
 
     anime.frames.clear();
-    left_Arm_Upper.animations.push_back(empty);
+    anime.frames.push_back(Frame( 000, 000, -40));
+    anime.frames.push_back(Frame( 000, 000, +40));
+    anime.frames.push_back(Frame( 000, 000, +40));
+    anime.frames.push_back(Frame( 000, 000, -40));
+    left_Arm_Upper.animations.push_back(anime);
 
     anime.frames.clear();
     left_Arm_Lower.animations.push_back(empty);
@@ -65,7 +69,11 @@ void Mario::importarHierarquia(){
     left_Arm_Hand.animations.push_back(empty);
 
     anime.frames.clear();
-    right_Arm_Upper.animations.push_back(empty);
+    anime.frames.push_back(Frame( 000, 000, -40));
+    anime.frames.push_back(Frame( 000, 000, +40));
+    anime.frames.push_back(Frame( 000, 000, +40));
+    anime.frames.push_back(Frame( 000, 000, -40));
+    right_Arm_Upper.animations.push_back(anime);
 
     anime.frames.clear();
     right_Arm_Lower.animations.push_back(empty);
@@ -75,46 +83,46 @@ void Mario::importarHierarquia(){
 
     anime.frames.clear();
 
-    anime.frames.push_back(Frame( -15, 000, 000));
-    anime.frames.push_back(Frame( +15, 000, 000));
-    anime.frames.push_back(Frame( +15, 000, 000));
-    anime.frames.push_back(Frame( -15, 000, 000));
+    anime.frames.push_back(Frame( -40, 000, 000));
+    anime.frames.push_back(Frame( +40, 000, 000));
+    anime.frames.push_back(Frame( +40, 000, 000));
+    anime.frames.push_back(Frame( -40, 000, 000));
     left_Leg_Upper.animations.push_back(anime);
 
     anime.frames.clear();
 
-    anime.frames.push_back(Frame( -05, 000, 000));
-    anime.frames.push_back(Frame( +05, 000, 000));
-    anime.frames.push_back(Frame( +05, 000, 000));
-    anime.frames.push_back(Frame( -05, 000, 000));
+    anime.frames.push_back(Frame( -20, 000, 000));
+    anime.frames.push_back(Frame( +20, 000, 000));
+    anime.frames.push_back(Frame( +20, 000, 000));
+    anime.frames.push_back(Frame( -20, 000, 000));
     left_Leg_Lower.animations.push_back(anime);
 
     anime.frames.clear();
-    anime.frames.push_back(Frame( +10, 000, 000));
-    anime.frames.push_back(Frame( -10, 000, 000));
-    anime.frames.push_back(Frame( +10, 000, 000));
-    anime.frames.push_back(Frame( -10, 000, 000));
+    anime.frames.push_back(Frame( +20, 000, 000));
+    anime.frames.push_back(Frame( -20, 000, 000));
+    anime.frames.push_back(Frame( +20, 000, 000));
+    anime.frames.push_back(Frame( -20, 000, 000));
     left_Leg_Foot.animations.push_back(anime);
 
     anime.frames.clear();
-    anime.frames.push_back(Frame( +15, 000, 000));
-    anime.frames.push_back(Frame( -15, 000, 000));
-    anime.frames.push_back(Frame( -15, 000, 000));
-    anime.frames.push_back(Frame( +15, 000, 000));
+    anime.frames.push_back(Frame( +40, 000, 000));
+    anime.frames.push_back(Frame( -40, 000, 000));
+    anime.frames.push_back(Frame( -40, 000, 000));
+    anime.frames.push_back(Frame( +40, 000, 000));
     right_Leg_Upper.animations.push_back(anime);
 
     anime.frames.clear();
-    anime.frames.push_back(Frame( +05, 000, 000));
-    anime.frames.push_back(Frame( -05, 000, 000));
-    anime.frames.push_back(Frame( -05, 000, 000));
-    anime.frames.push_back(Frame( +05, 000, 000));
+    anime.frames.push_back(Frame( +20, 000, 000));
+    anime.frames.push_back(Frame( -20, 000, 000));
+    anime.frames.push_back(Frame( -20, 000, 000));
+    anime.frames.push_back(Frame( +20, 000, 000));
     right_Leg_Lower.animations.push_back(anime);
 
     anime.frames.clear();
-    anime.frames.push_back(Frame( +10, 000, 000));
-    anime.frames.push_back(Frame( -10, 000, 000));
-    anime.frames.push_back(Frame( +10, 000, 000));
-    anime.frames.push_back(Frame( -10, 000, 000));
+    anime.frames.push_back(Frame( +20, 000, 000));
+    anime.frames.push_back(Frame( -20, 000, 000));
+    anime.frames.push_back(Frame( +20, 000, 000));
+    anime.frames.push_back(Frame( -20, 000, 000));
     right_Leg_Foot.animations.push_back(anime);
 
     anime.frames.clear();
@@ -144,41 +152,41 @@ void Mario::importarHierarquia(){
 void Mario::animate(int value) {
 
     if (this->passo < this->veloc) {
-        this->passo += 1;
-        for (this->passo = 0; this->passo < this->veloc; this->passo++ )
-            this->obj.animar(0, this->frame, this->veloc);
+        this->passo++;
+        //for (this->passo = 0; this->passo < this->veloc; this->passo++ )
+        this->obj.animar(0, this->frame, this->veloc);
     } else {
-        this->passo = 0;
         if (this->frame < this->obj.animations[this->obj.animacao].frames.size() - 1)
-            this->frame += 1;
+            this->frame++;
         else
             this->frame = 0;
 
-        for (this->passo = 0; this->passo < this->veloc; this->passo++ )
-            this->obj.animar(0, this->frame, this->veloc);
+        this->passo = 0;
+        //for (this->passo = 0; this->passo < this->veloc; this->passo++ )
+        this->obj.animar(0, this->frame, this->veloc);
     }
 }
 
-void Mario::frente() {
-    this->obj.rotY = 0;
-    this->obj.posZ += 0.1;
+void Mario::frente(int aceleracao) {
+    this->obj.rotY += 0;
+    this->obj.posZ += (0.1 * aceleracao);
     this->animate(1);
 }
 
-void Mario::esquerda() {
-    this->obj.rotY = 90;
-    this->obj.posX += 0.1;
+void Mario::esquerda(int aceleracao) {
+    this->obj.rotY--;
+    //this->obj.posX += (0.1 * aceleracao);
     this->animate(1);
 }
 
-void Mario::direita() {
-    this->obj.rotY = 270;
-    this->obj.posX -= 0.1;
+void Mario::direita(int aceleracao) {
+    this->obj.rotY++;
+    //this->obj.posX -= (0.1 * aceleracao);
     this->animate(1);
 }
 
-void Mario::tras() {
-    this->obj.rotY = 180;
-    this->obj.posZ -= 0.1;
+void Mario::tras(int aceleracao) {
+    this->obj.rotY += 180;
+    //this->obj.posZ -= (0.1 * aceleracao);
     this->animate(1);
 }

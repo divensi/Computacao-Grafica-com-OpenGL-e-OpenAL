@@ -305,14 +305,6 @@ void Modelo::animar(int animation, int frame, int veloc) {
     this->rotY  = this->rotY + (this->animations[animation].frames[frame].rotY/veloc);
     this->rotZ  = this->rotZ + (this->animations[animation].frames[frame].rotZ/veloc);
 
-    this->posX += this->animations[animation].frames[frame].posX/veloc; // posicao
-    this->posY += this->animations[animation].frames[frame].posY/veloc;
-    this->posZ += this->animations[animation].frames[frame].posZ/veloc;
-
-    this->scaX += this->animations[animation].frames[frame].scaX/veloc; // escala
-    this->scaY += this->animations[animation].frames[frame].scaY/veloc;
-    this->scaZ += this->animations[animation].frames[frame].scaZ/veloc;
-
     std::cout << "(" << this->posX << ", " << this->posY << ", " << this->posZ << ") - (" << this->rotX << ", " << this->rotY << ", " << this->rotZ <<")\n";
 
     for (unsigned int i = 0; i < this->filhos.size(); i++ ) {

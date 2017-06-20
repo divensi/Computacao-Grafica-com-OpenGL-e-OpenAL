@@ -17,7 +17,7 @@ GLfloat rotX, rotY, rotX_ini, rotY_ini;
 GLfloat angle;
 GLfloat fAspect;
 int x_ini, y_ini, bot;
-
+GLint ultimaTecla, aceleracao;
 //static GLint eixoy, eixox;
 GLint largura, altura;
 GLint xAux, yAux;
@@ -246,18 +246,26 @@ void display(void)
 // Funo callback para tratar eventos de teclas especiais
 void TeclasEspeciais(int tecla, int x, int y)
 {
+    if (tecla == ultimaTecla) {
+        if (aceleracao < 2) {
+            aceleracao += 0.1;
+        }
+    } else {
+        aceleracao = 1;
+    }
+
     switch (tecla) {
     case GLUT_KEY_LEFT:
-        mario.esquerda();
+        mario.esquerda(aceleracao);
         break;
     case GLUT_KEY_RIGHT:
-        mario.direita();
+        mario.direita(aceleracao);
         break;
     case GLUT_KEY_UP:
-        mario.frente();
+        mario.frente(aceleracao);
         break;
     case GLUT_KEY_DOWN:
-        mario.tras();
+        mario.tras(aceleracao);
         break;
     case GLUT_KEY_PAGE_UP:
         mario.obj.posY -= 2;
@@ -274,6 +282,7 @@ void TeclasEspeciais(int tecla, int x, int y)
             angle += 5;
         break;
     }
+    ultimaTecla = tecla;
     PosicionaObservador();
 }
 
