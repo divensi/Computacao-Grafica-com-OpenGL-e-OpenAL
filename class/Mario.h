@@ -27,6 +27,8 @@ public:
 
     std::string acao;
 
+    void animate(int value);
+
     void importarHierarquia();
 
     float scaX;
@@ -40,5 +42,21 @@ public:
     float posX;
     float posY;
     float posZ;
+
+    unsigned int frame = 0;
+    unsigned int veloc = 8;
+    unsigned int passo = 0;
+
+    void frente();
+
+    void esquerda();
+
+    void direita();
+
+    void tras();
+
+    void pular();
+
+    void home();
 
 };

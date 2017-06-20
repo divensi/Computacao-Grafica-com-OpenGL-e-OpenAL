@@ -298,6 +298,7 @@ int Modelo::LoadGLTextures()
 }
 
 void Modelo::animar(int animation, int frame, int veloc) {
+
     std::cout << "animation " << this->animations[animation].frames.size() <<  ":" << frame << '\n';
 
     this->rotX  = this->rotX + (this->animations[animation].frames[frame].rotX/veloc); // angulos

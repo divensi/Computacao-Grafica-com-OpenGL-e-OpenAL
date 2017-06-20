@@ -6,17 +6,16 @@ void Mario::importarHierarquia(){
     this->angZ = 0;
 
     this->posX = 0; // posicao
-    this->posY = 2;
+    this->posY = 0;
     this->posZ = 0;
 
     this->scaX = 0; // escala
     this->scaY = 0;
     this->scaZ = 0;
 
-
     std::string folder = "Mario64";
 
-    Modelo torso                = Modelo(folder, "Torso"               , this->posX, this->posY, this->posZ, 0.0, 0.0, 0.0);
+    Modelo torso                = Modelo(folder, "Torso"               , 0.0, 1.275, 0.0, 0.0, 0.0, 0.0);
     Modelo head                 = Modelo(folder, "Head"                , 0.0, 0.3, 0.1, 0.0, 0.0, 0.0);
     Modelo left_Arm_Upper       = Modelo(folder, "Left_Arm_Upper"      , 0.4, 0.2, 0.0, 0.0, 0.0, 0.0);
     Modelo left_Arm_Lower       = Modelo(folder, "Left_Arm_Lower"      , 0.3, 0.025,-0.1, 0.0, 0.0, 0.0);
@@ -141,3 +140,45 @@ void Mario::importarHierarquia(){
     this->obj = torso;
 
 };
+
+void Mario::animate(int value) {
+
+    if (this->passo < this->veloc) {
+        this->passo += 1;
+        for (this->passo = 0; this->passo < this->veloc; this->passo++ )
+            this->obj.animar(0, this->frame, this->veloc);
+    } else {
+        this->passo = 0;
+        if (this->frame < this->obj.animations[this->obj.animacao].frames.size() - 1)
+            this->frame += 1;
+        else
+            this->frame = 0;
+
+        for (this->passo = 0; this->passo < this->veloc; this->passo++ )
+            this->obj.animar(0, this->frame, this->veloc);
+    }
+}
+
+void Mario::frente() {
+    this->obj.rotY = 0;
+    this->obj.posZ += 0.1;
+    this->animate(1);
+}
+
+void Mario::esquerda() {
+    this->obj.rotY = 90;
+    this->obj.posX += 0.1;
+    this->animate(1);
+}
+
+void Mario::direita() {
+    this->obj.rotY = 270;
+    this->obj.posX -= 0.1;
+    this->animate(1);
+}
+
+void Mario::tras() {
+    this->obj.rotY = 180;
+    this->obj.posZ -= 0.1;
+    this->animate(1);
+}

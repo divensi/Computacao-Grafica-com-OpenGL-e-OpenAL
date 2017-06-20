@@ -141,7 +141,6 @@ void init(void)
     obsX = obsY = 0;
     obsZ = 20;
 
-
 }
 
 void reshape(int w, int h)
@@ -249,17 +248,16 @@ void TeclasEspeciais(int tecla, int x, int y)
 {
     switch (tecla) {
     case GLUT_KEY_LEFT:
-        mario.obj.posX += 0.1;
+        mario.esquerda();
         break;
     case GLUT_KEY_RIGHT:
-        mario.obj.posX -= 0.1;
+        mario.direita();
         break;
     case GLUT_KEY_UP:
-        mario.obj.animacao = 0;
-        mario.obj.posZ += 0.1;
+        mario.frente();
         break;
     case GLUT_KEY_DOWN:
-        mario.obj.posZ -= 0.1;
+        mario.tras();
         break;
     case GLUT_KEY_PAGE_UP:
         mario.obj.posY -= 2;
@@ -279,31 +277,6 @@ void TeclasEspeciais(int tecla, int x, int y)
     PosicionaObservador();
 }
 
-unsigned int frame = 0;
-unsigned int veloc = 8;
-unsigned int passo = 0;
-
-void animate(int value) {
-
-    if (passo < veloc) {
-        passo += 1;
-
-        for ( unsigned int passo = 0; passo < veloc; passo++ ) {
-            mario.obj.animar(0, frame, veloc);
-        }
-
-    } else {
-
-        if (frame < mario.obj.animations[mario.obj.animacao].frames.size() - 1) {
-            frame += 1;
-        } else {
-            frame = 0;
-        }
-        passo = 0;
-
-    }
-
-}
 
 // Funo callback chamada para gerenciar eventos de teclas normais (ESC)
 void Teclado(unsigned char tecla, int x, int y)
@@ -311,9 +284,7 @@ void Teclado(unsigned char tecla, int x, int y)
     if (tecla == 27) // ESC ?
         exit(0);
     if (tecla >= '0' && tecla <= '2') {
-       for (unsigned int i = 0; i <= mario.obj.animations[0].frames.size() * veloc; i++) {
-            glutTimerFunc(i*50, animate, 1);
-       }
+
     }
     if (tecla == 'a') {
         acao++;

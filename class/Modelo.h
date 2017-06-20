@@ -9,9 +9,13 @@ class Modelo {
 public:
     Modelo()
     {
-        this->rotX = 0; // angulos
-        this->rotY = 0;
-        this->rotZ = 0;
+        this->rotX_ini = 0; // angulos
+        this->rotY_ini = 0;
+        this->rotZ_ini = 0;
+
+        this->rotX = rotX; // posicao
+        this->rotY = rotY;
+        this->rotZ = rotZ;
 
         this->posX = 0; // posicao
         this->posY = 0;
@@ -27,9 +31,13 @@ public:
     }
     Modelo(std::string folder, std::string model)
     {
-        this->rotX = 0; // angulos
-        this->rotY = 0;
-        this->rotZ = 0;
+        this->rotX_ini = 0; // angulos
+        this->rotY_ini = 0;
+        this->rotZ_ini = 0;
+
+        this->rotX = rotX; // posicao
+        this->rotY = rotY;
+        this->rotZ = rotZ;
 
         this->posX = 0; // posicao
         this->posY = 0;
@@ -49,6 +57,10 @@ public:
         float posX, float posY, float posZ,
         float rotX, float rotY, float rotZ)
     {
+        this->rotX_ini = rotX; // posicao
+        this->rotY_ini = rotY;
+        this->rotZ_ini = rotZ;
+
         this->rotX = rotX; // posicao
         this->rotY = rotY;
         this->rotZ = rotZ;
@@ -85,6 +97,12 @@ public:
 
     void animar(int animation, int frame, int veloc);
 
+    void reset() {
+        this->rotX = rotX_ini; // posicao
+        this->rotY = rotY_ini;
+        this->rotZ = rotZ_ini;
+    }
+
     int LoadGLTextures();
 
     std::string nome;
@@ -97,6 +115,10 @@ public:
     int rotX;
     int rotY;
     int rotZ;
+
+    int rotX_ini;
+    int rotY_ini;
+    int rotZ_ini;
 
     float posX;
     float posY;
