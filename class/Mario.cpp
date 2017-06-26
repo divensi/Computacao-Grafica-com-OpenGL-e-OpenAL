@@ -291,27 +291,27 @@ void Mario::makeSound(const char * filename)
     ALuint buffer, source;
     ALuint state;
 
-    // Capture errors
+    // Captura de erros
     alGetError();
 
-    // Load pcm data into buffer
+    // carrega arquivo no buffer do OpenAL util
     buffer = alutCreateBufferFromFile(filename);
 
-    // Create sound source (use buffer to fill source)
+    // Cria fonte de audio com o buffer
     alGenSources(1, &source);
     alSourcei(source, AL_BUFFER, buffer);
 
-    // Play
+    // Executa
     alSourcePlay(source);
 
-    // Wait for the song to complete
-    do {
-        alGetSourcei(source, AL_SOURCE_STATE, (ALint *)&state);
-    } while (state == AL_PLAYING);
-
-    // Clean up sources and buffers
-    alDeleteSources(1, &source);
-    alDeleteBuffers(1, &buffer);
+    // // Espera o fim da execução do audio
+    // do {
+    //     alGetSourcei(source, AL_SOURCE_STATE, (ALint *)&state);
+    // } while (state == AL_PLAYING);
+    //
+    // // Limpa as fontes de audio e buffers
+    // alDeleteSources(1, &source);
+    // alDeleteBuffers(1, &buffer);
 }
 
 void Mario::animate(int animacao) {

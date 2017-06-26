@@ -87,6 +87,18 @@ void desenhaChao(void)
     glEnd();
 }
 
+void desenhaBolas() {
+    glColor3f(1, 0, 0);
+    glPushMatrix();
+        glTranslatef(-100, 0, 0);
+        glutSolidSphere(2, 12, 12);
+    glPopMatrix();
+    glPushMatrix();
+        glTranslatef(100, 0, 0);
+        glutSolidSphere(2, 12, 12);
+    glPopMatrix();
+}
+
 // Funo usada para especificar a posio do observador virtual
 void PosicionaObservador(void)
 {
@@ -142,15 +154,17 @@ void init(void)
     // Define a cor de fundo da janela de visualizao como branca
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-    // // Habilita a definio da cor do material a partir da cor corrente
-    // glEnable(GL_COLOR_MATERIAL);
-    // //Habilita o uso de iluminao
-    // glEnable(GL_LIGHTING);
-    // // Habilita as fontes de luz
-    // glEnable(GL_LIGHT0);
-    // glEnable(GL_LIGHT1);
-    // glEnable(GL_LIGHT2);
-    // // Habilita o depth-buffering
+
+
+    // Habilita a definio da cor do material a partir da cor corrente
+    glEnable(GL_COLOR_MATERIAL);
+    //Habilita o uso de iluminao
+    glEnable(GL_LIGHTING);
+    // Habilita as fontes de luz
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHT2);
+    // Habilita o depth-buffering
     // glEnable(GL_DEPTH_TEST);
 
     // Inicializa a varivel que especifica o ngulo da projeo
@@ -231,7 +245,6 @@ void GerenciaMovim(int x, int y)
         obsY = obsY_ini - deltay / SENS_TRANSL;
     }
     PosicionaObservador();
-    //glutPostRedisplay();
 }
 
 void renderizarModelos()
@@ -256,6 +269,8 @@ void display(void)
     glPopMatrix();
 
     desenhaChao();
+
+    desenhaBolas();
 
     EspecificaParametrosVisualizacao();
 
@@ -336,6 +351,45 @@ void verificaFlags() {
     }
 }
 
+float dist(float X1, float Y1, float Z1, float X2, float Y2, float Z2) {
+    return sqrt((X1 - X2)*(X1 - X2) + (Y1 - Y2)*(Y1 - Y2) + (Z1 - Z2)*(Z1 - Z2));
+}
+
+void make3DSound(const char * filename, float sourceX, float sourceY, float sourceZ)
+{
+    ALuint buffer, source;
+    ALuint state;
+
+    // Captura de erros
+    alGetError();
+
+    // carrega arquivo no buffer do OpenAL util
+    buffer = alutCreateBufferFromFile(filename);
+
+    // Cria fonte de audio com o buffer
+    alGenSources(1, &source);
+
+    alSourcei( source, AL_BUFFER, buffer);
+
+    // Executa
+    alSourcePlay(source);
+
+    //Espera o fim da execução do audio
+    do {
+        alGetSourcei(source, AL_SOURCE_STATE, (ALint *)&state);
+
+        alSourcef( source, AL_GAIN, 10/dist(sourceX, sourceY, sourceZ,
+                                            mario.posX, mario.posY, mario.posZ));
+
+        std::cout << mario.posX << " " << mario.posY << " " << mario.posZ << '\n';
+
+    } while (state == AL_PLAYING);
+
+    // Limpa as fontes de audio e buffers
+    alDeleteSources(1, &source);
+    alDeleteBuffers(1, &buffer);
+}
+
 void teclaPressiona(unsigned char tecla, int x, int y) {
     if (tecla == ultimaTecla) {
         if (aceleracao < 10) {
@@ -368,8 +422,6 @@ void teclaPressiona(unsigned char tecla, int x, int y) {
     }
 
     ultimaTecla = tecla;
-
-    //verificaFlags();
 }
 
 void teclaSolta(unsigned char tecla, int x, int y) {
@@ -392,7 +444,16 @@ void teclaSolta(unsigned char tecla, int x, int y) {
     if (tecla == ' ')
         flagSpace = false;
 
-    //verificaFlags();
+    if (tecla == 'x') {
+        std::thread audio1 = std::thread([]() {
+           make3DSound("sound/castle.wav", -100, 0, 0);
+        });
+        audio1.detach();
+        std::thread audio2 = std::thread([]() {
+            make3DSound("sound/haunted.wav", 100, 0, 0);
+        });
+        audio2.detach();
+    }
 
 }
 
@@ -402,12 +463,14 @@ void timer(int value) {
     glutTimerFunc(16, timer, 1);
 }
 
+
+
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
     alutInit(0, NULL);
 
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
     glutInitWindowPosition(900, 5);
     glutCreateWindow("Mario");
@@ -416,17 +479,17 @@ int main(int argc, char** argv)
 
     glutDisplayFunc(display);
 
-    // Registra a funo callback para tratamento das teclas normais
-glutIgnoreKeyRepeat(true);
+    // Registra a funcao callback para tratamento das teclas normais
+    glutIgnoreKeyRepeat(true);
     glutKeyboardFunc(teclaPressiona);
     glutKeyboardUpFunc(teclaSolta);
 
-    // Registra a funo callback para tratamento das teclas especiais
+    // Registra a funcao callback para tratamento das teclas especiais
     glutSpecialFunc(TeclasEspeciais);    // Registra a funo callback para eventos de botes do mouse
 
     glutMouseFunc(GerenciaMouse);
 
-    // Registra a funo callback para eventos de movimento do mouse
+    // Registra a funcao callback para eventos de movimento do mouse
     glutMotionFunc(GerenciaMovim);
 
     glutIdleFunc(verificaFlags);

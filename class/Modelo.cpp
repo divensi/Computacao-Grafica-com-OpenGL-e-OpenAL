@@ -275,8 +275,8 @@ int Modelo::LoadGLTextures()
         }
         // Typical Texture Generation Using Data From The Bitmap
         glBindTexture(GL_TEXTURE_2D, this->membros[i].textura);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         //
         // glEnable(GL_TEXTURE_2D);			    // Enable Texture Mapping (
@@ -308,6 +308,9 @@ void Modelo::animar(int animation, int frame, int veloc) {
     this->rotX  = this->rotX + (this->animations[animation].frames[frame].rotX/veloc); // angulos
     this->rotY  = this->rotY + (this->animations[animation].frames[frame].rotY/veloc);
     this->rotZ  = this->rotZ + (this->animations[animation].frames[frame].rotZ/veloc);
+
+    alListener3f( AL_POSITION, this->posX*10,this->posZ*10, this->posY*10);
+    alListener3f( AL_VELOCITY, 1, 1, 1);
 
     //std::cout << "(" << this->posX << ", " << this->posY << ", " << this->posZ << ") - (" << this->rotX << ", " << this->rotY << ", " << this->rotZ <<")\n";
 
