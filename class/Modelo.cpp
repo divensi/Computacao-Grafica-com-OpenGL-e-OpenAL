@@ -198,7 +198,6 @@ void Modelo::importarModelo(std::string folder, std::string model)
 
 void Modelo::renderizar() {
 
-    glPushMatrix();
         glTranslatef(this->posX, this->posY, this->posZ); // vai para o meio do osso
         glRotatef(this->rotX, 1, 0, 0); // vai para o meio do osso
         glRotatef(this->rotY, 0, 1, 0); // vai para o meio do osso
@@ -249,10 +248,11 @@ void Modelo::renderizar() {
         }
 
         for (unsigned int i = 0; i < this->filhos.size(); i++ ) {
+            glPushMatrix();
             this->filhos[i].renderizar();
+            glPopMatrix();
         }
 
-    glPopMatrix();
 }
 
 // Load Bitmaps And Convert To Textures
@@ -266,7 +266,7 @@ int Modelo::LoadGLTextures()
             /* load an image file directly as a new OpenGL texture */
             this->membros[i].textura = SOIL_load_OGL_texture(
                 texture_file.str().c_str(), SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID,
-                SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y); //SOIL_FLAG_TEXTURE_REPEATS
+                SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_TEXTURE_REPEATS); //SOIL_FLAG_TEXTURE_REPEATS
 
             if (this->membros[i].textura == 0) {
                 std::cout << "ERRO: falha ao ler textura " << texture_file.str()
@@ -299,15 +299,33 @@ int Modelo::LoadGLTextures()
 
 void Modelo::animar(int animation, int frame, int veloc) {
 
-    std::cout << "animation " << this->animations[animation].frames.size() <<  ":" << frame << '\n';
+    //std::cout << "animation " << this->animations[animation].frames.size() <<  ":" << frame << '\n';
+
+    this->posX  = this->posX + (this->animations[animation].frames[frame].posX/veloc); // angulos
+    this->posY  = this->posY + (this->animations[animation].frames[frame].posY/veloc);
+    this->posZ  = this->posZ + (this->animations[animation].frames[frame].posZ/veloc);
 
     this->rotX  = this->rotX + (this->animations[animation].frames[frame].rotX/veloc); // angulos
     this->rotY  = this->rotY + (this->animations[animation].frames[frame].rotY/veloc);
     this->rotZ  = this->rotZ + (this->animations[animation].frames[frame].rotZ/veloc);
 
-    std::cout << "(" << this->posX << ", " << this->posY << ", " << this->posZ << ") - (" << this->rotX << ", " << this->rotY << ", " << this->rotZ <<")\n";
+    //std::cout << "(" << this->posX << ", " << this->posY << ", " << this->posZ << ") - (" << this->rotX << ", " << this->rotY << ", " << this->rotZ <<")\n";
 
     for (unsigned int i = 0; i < this->filhos.size(); i++ ) {
         this->filhos[i].animar(animation, frame, veloc);
     }
-};
+}
+
+void Modelo::home() {
+    this->rotX = this->rotX_ini;
+    this->rotY = this->rotY_ini;
+    this->rotZ = this->rotZ_ini;
+
+    this->posX = this->posX_ini;
+    this->posY = this->posY_ini;
+    this->posZ = this->posZ_ini;
+
+    for (unsigned int i = 0; i < this->filhos.size(); i++ ) {
+        this->filhos[i].home();
+    }
+}

@@ -13,17 +13,21 @@ public:
         this->rotY_ini = 0;
         this->rotZ_ini = 0;
 
-        this->rotX = rotX; // posicao
-        this->rotY = rotY;
-        this->rotZ = rotZ;
+        this->rotX = rotX_ini; // posicao
+        this->rotY = rotX_ini;
+        this->rotZ = rotX_ini;
 
         this->posX = 0; // posicao
         this->posY = 0;
         this->posZ = 0;
 
-        this->scaX = 0; // escala
-        this->scaY = 0;
-        this->scaZ = 0;
+        this->posX_ini = 0; // posicao
+        this->posY_ini = 0;
+        this->posZ_ini = 0;
+
+        this->scaX = 1; // escala
+        this->scaY = 1;
+        this->scaZ = 1;
 
         this->nome = "";
 
@@ -35,17 +39,21 @@ public:
         this->rotY_ini = 0;
         this->rotZ_ini = 0;
 
-        this->rotX = rotX; // posicao
-        this->rotY = rotY;
-        this->rotZ = rotZ;
+        this->rotX = rotX_ini; // posicao
+        this->rotY = rotX_ini;
+        this->rotZ = rotX_ini;
 
         this->posX = 0; // posicao
         this->posY = 0;
         this->posZ = 0;
 
-        this->scaX = 0; // escala
-        this->scaY = 0;
-        this->scaZ = 0;
+        this->posX_ini = 0; // posicao
+        this->posY_ini = 0;
+        this->posZ_ini = 0;
+
+        this->scaX = 1; // escala
+        this->scaY = 1;
+        this->scaZ = 1;
 
         this->nome = model;
         this->folder = folder;
@@ -69,9 +77,13 @@ public:
         this->posY = posY;
         this->posZ = posZ;
 
-        this->scaX = 0; // escala
-        this->scaY = 0;
-        this->scaZ = 0;
+        this->posX_ini = posX; // posicao
+        this->posY_ini = posY;
+        this->posZ_ini = posZ;
+
+        this->scaX = 1; // escala
+        this->scaY = 1;
+        this->scaZ = 1;
 
         this->nome = model;
         this->folder = folder;
@@ -80,6 +92,8 @@ public:
         this->animacao = 0;
 
     }
+
+    void home();
 
     std::vector<Vertice> v; // vertices
     std::vector<Vertice> vn; // vertices normal
@@ -123,4 +137,8 @@ public:
     float posX;
     float posY;
     float posZ;
+
+    float posX_ini;
+    float posY_ini;
+    float posZ_ini;
 };

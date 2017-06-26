@@ -6,9 +6,9 @@ class Mario {
 public:
     Mario()
     {
-        angX = 0; // angulos
-        angY = 0;
-        angZ = 0;
+        rotX = 0; // rotulos
+        rotY = 0;
+        rotZ = 0;
 
         posX = 0; // posicao
         posY = 0;
@@ -29,15 +29,17 @@ public:
 
     void animate(int value);
 
+    static void makeSound(const char * filename);
+
     void importarHierarquia();
 
     float scaX;
     float scaY;
     float scaZ;
 
-    float angX;
-    float angY;
-    float angZ;
+    float rotX;
+    float rotY;
+    float rotZ;
 
     float posX;
     float posY;
@@ -47,6 +49,8 @@ public:
     unsigned int veloc = 8;
     unsigned int accel = 1;
     unsigned int passo = 0;
+
+    void renderizar();
 
     void frente(int aceleracao);
 

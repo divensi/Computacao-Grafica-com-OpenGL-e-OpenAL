@@ -1,10 +1,24 @@
-#include "SOIL/SOIL.h"
-#include "class/Modelo.cpp"
-#include <GL/gl.h>
-#include <GL/glut.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include <vector>
+#include <thread>
+#include <functional>
+#include <unistd.h>
+#include <math.h>
+
+//OPENGL
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+
+//OPENAL
+#include <AL/al.h>
+#include <AL/alc.h>
+#include <AL/alut.h>
+
+#include "SOIL/SOIL.h"
+#include "class/Modelo.cpp"
 #include "class/Mario.cpp"
 
 void init(void);
@@ -18,9 +32,12 @@ GLfloat angle;
 GLfloat fAspect;
 int x_ini, y_ini, bot;
 GLint ultimaTecla, aceleracao;
-//static GLint eixoy, eixox;
 GLint largura, altura;
 GLint xAux, yAux;
+
+GLboolean flagW = false, flagA = false, flagS = false,
+          flagD = false, flagSpace = false, flagJumpin = false;
+
 //static GLfloat spin = 0.0;
 
 Mario mario = Mario();
@@ -33,8 +50,8 @@ unsigned int parte = 0;
 unsigned int acao = 0;
 
 void desenhaChao(void)
-#define TAM 5
-#define D 2
+#define TAM 1000
+#define D 3
 {
     // Flags para determinar a cor de cada quadrado
     bool flagx, flagz;
@@ -43,17 +60,17 @@ void desenhaChao(void)
     glBegin(GL_QUADS);
     flagx = false;
     // X varia de -TAM a TAM, de D em D
-    for (float x = 0; x < TAM; x += D) {
+    for (float x = -TAM; x < TAM; x += D) {
         // Flagx determina a cor inicial
         if (flagx)
             flagz = false;
         else
             flagz = true;
         // Z varia de -TAM a TAM, de D em D
-        for (float z = 0; z < TAM; z += D) {
+        for (float z = -TAM; z < TAM; z += D) {
             // Escolhe cor
             if (flagz)
-                glColor3f(0.4, 0.4, 0.4);
+                glColor3f(0.8, 0.8, 0.8);
             else
                 glColor3f(1, 1, 1);
             // E desenha o quadrado
@@ -78,9 +95,13 @@ void PosicionaObservador(void)
     // Inicializa sistema de coordenadas do modelo
     glLoadIdentity();
     // Posiciona e orienta o observador
-    glTranslatef(-obsX, -obsY, -obsZ);
-    glRotatef(rotX, 1, 0, 0);
-    glRotatef(rotY, 0, 1, 0);
+    gluLookAt( mario.posX, mario.posY + 10, mario.posZ - 20,
+              mario.posX, mario.posY, mario.posZ,
+              0, 1, 0);
+    //glTranslatef(-obsX + mario.posX, -obsY + mario.posY, -obsZ + mario.posZ);
+    //glTranslatef(-obsX + mario.posX, -obsY + mario.posY - mario.posZ/2, -obsZ + mario.posZ);
+    //glRotatef(rotX, 1, 0, 0);
+    //glRotatef(rotY, 0, 1, 0);
 }
 
 void desenhaOrigem(void)
@@ -121,23 +142,23 @@ void init(void)
     // Define a cor de fundo da janela de visualizao como branca
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-    // Habilita a definio da cor do material a partir da cor corrente
-    glEnable(GL_COLOR_MATERIAL);
-    //Habilita o uso de iluminao
-    glEnable(GL_LIGHTING);
-    // Habilita as fontes de luz
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
-    glEnable(GL_LIGHT2);
-    // Habilita o depth-buffering
-    glEnable(GL_DEPTH_TEST);
+    // // Habilita a definio da cor do material a partir da cor corrente
+    // glEnable(GL_COLOR_MATERIAL);
+    // //Habilita o uso de iluminao
+    // glEnable(GL_LIGHTING);
+    // // Habilita as fontes de luz
+    // glEnable(GL_LIGHT0);
+    // glEnable(GL_LIGHT1);
+    // glEnable(GL_LIGHT2);
+    // // Habilita o depth-buffering
+    // glEnable(GL_DEPTH_TEST);
 
     // Inicializa a varivel que especifica o ngulo da projeo
     // perspectiva
     angle = 45;
 
     rotX = 30;
-    rotY = 0;
+    rotY = 180;
     obsX = obsY = 0;
     obsZ = 20;
 
@@ -216,7 +237,7 @@ void GerenciaMovim(int x, int y)
 void renderizarModelos()
 {
     glPushMatrix();
-    mario.obj.renderizar();
+    mario.renderizar();
 
     glPopMatrix();
 }
@@ -233,8 +254,6 @@ void display(void)
     renderizarModelos();
 
     glPopMatrix();
-
-    //desenhaOrigem();
 
     desenhaChao();
 
@@ -254,121 +273,127 @@ void TeclasEspeciais(int tecla, int x, int y)
         aceleracao = 1;
     }
 
-    switch (tecla) {
-    case GLUT_KEY_LEFT:
+    if (tecla == GLUT_KEY_LEFT) {
         mario.esquerda(aceleracao);
-        break;
-    case GLUT_KEY_RIGHT:
-        mario.direita(aceleracao);
-        break;
-    case GLUT_KEY_UP:
-        mario.frente(aceleracao);
-        break;
-    case GLUT_KEY_DOWN:
-        mario.tras(aceleracao);
-        break;
-    case GLUT_KEY_PAGE_UP:
-        mario.obj.posY -= 2;
-        break;
-    case GLUT_KEY_PAGE_DOWN:
-        mario.obj.posY += 2;
-        break;
-    case GLUT_KEY_HOME:
-        if (angle >= 10)
-            angle -= 5;
-        break;
-    case GLUT_KEY_END:
-        if (angle <= 150)
-            angle += 5;
-        break;
     }
     ultimaTecla = tecla;
     PosicionaObservador();
 }
 
+void jump(int animacao) {
+    flagJumpin = true;
+    if (mario.passo == 2 && mario.frame == 0 && animacao == 1) {
+        std::thread audio = std::thread([]() {
+            Mario::makeSound("sound/yahoo.wav");
+        });
+        audio.detach();
+    }
+    if (mario.passo == 2 && mario.frame == 0 && animacao == 2) {
+        std::thread audio = std::thread([]() {
+            Mario::makeSound("sound/yippee.wav");
+        });
+        audio.detach();
+    }
 
-// Funo callback chamada para gerenciar eventos de teclas normais (ESC)
-void Teclado(unsigned char tecla, int x, int y)
-{
+    if (mario.passo < mario.veloc) {
+        mario.passo++;
+        //for (mario.passo = 0; mario.passo < mario.veloc; mario.passo++ )
+        mario.obj.animar(animacao, mario.frame, mario.veloc);
+    } else {
+
+        mario.obj.animar(animacao, mario.frame, mario.veloc);
+        if (mario.frame < mario.obj.animations[animacao].frames.size()-1) {
+            mario.frame++;
+        } else {
+             mario.frame = 0;
+        }
+
+        mario.passo = 0;
+
+    }
+    std::cout << "frame=" << mario.frame << " passo=" << mario.passo << '\n';
+}
+
+void verificaFlags() {
+    if (flagW){
+        mario.frente(aceleracao);
+    }
+    if (flagS){
+        mario.tras(aceleracao);
+    }
+    if (flagA){
+        mario.esquerda(aceleracao);
+    }
+    if (flagD){
+        mario.direita(aceleracao);
+    }
+    if (flagSpace && !flagW){
+        mario.home();
+        for (unsigned int x = 0; x < 36; x++ ) {
+            glutTimerFunc(16*x, jump, 1);
+        }
+        flagSpace = false;
+    }
+}
+
+void teclaPressiona(unsigned char tecla, int x, int y) {
+    if (tecla == ultimaTecla) {
+        if (aceleracao < 10) {
+            aceleracao += 0.1;
+        }
+    } else {
+        aceleracao = 1;
+    }
+    std::cout << tecla << '\n';
+
     if (tecla == 27) // ESC ?
         exit(0);
-    if (tecla >= '0' && tecla <= '2') {
+    if (tecla == 'h')
+        mario.home();
+    if (tecla == 'w')
+        flagW = true;
+    if (tecla == 's')
+        flagS = true;
+    if (tecla == 'a')
+        flagA = true;
+    if (tecla == 'd')
+        flagD = true;
+    if (tecla == ' ')
+        flagSpace = true;
+    if (tecla == 'b' && !flagW) {
+        mario.home();
+        for (unsigned int x = 0; x < 36; x++ ) {
+            glutTimerFunc(16*x, jump, 2);
+        }
+    }
 
+    ultimaTecla = tecla;
+
+    //verificaFlags();
+}
+
+void teclaSolta(unsigned char tecla, int x, int y) {
+    if (tecla == 'w') {
+        mario.home();
+        flagW = false;
+    }
+    if (tecla == 's') {
+        flagS = false;
+        mario.home();
     }
     if (tecla == 'a') {
-        acao++;
-        if (acao == 2)
-            acao = 0;
-        if (acao == 0)
-            std::cout << "parte = Rotacao" << '\n';
-        if (acao == 1)
-            std::cout << "parte = Posicao" << '\n';
-        if (acao == 2)
-            std::cout << "parte = Escala" << '\n';
+        flagA = false;
+        mario.home();
     }
-    if (tecla == 'x') {
-        if (acao == 0)
-            mario.obj.filhos[parte].rotX = ++marioRotX;
-        if (acao == 1)
-            mario.obj.filhos[parte].posX = ++marioPosX/10;
-        if (acao == 2)
-            mario.obj.filhos[parte].scaX = ++marioScaX;
+    if (tecla == 'd') {
+        flagD = false;
+        mario.home();
     }
-    if (tecla == 'X') {
-        if (acao == 0)
-            mario.obj.filhos[parte].rotX = --marioRotX;
-        if (acao == 1)
-            mario.obj.filhos[parte].posX = --marioPosX/10;
-        if (acao == 2)
-            mario.obj.filhos[parte].scaX = --marioScaX;
-    }
-    if (tecla == 'y') {
-        if (acao == 0)
-            mario.obj.filhos[parte].rotY = ++marioRotY;
-        if (acao == 1)
-            mario.obj.filhos[parte].posY = ++marioPosY/10;
-        if (acao == 2)
-            mario.obj.filhos[parte].scaY = ++marioScaY;
-    }
-    if (tecla == 'Y') {
-        if (acao == 0)
-            mario.obj.filhos[parte].rotY = --marioRotY;
-        if (acao == 1)
-            mario.obj.filhos[parte].posY = --marioPosY/10;
-        if (acao == 2)
-            mario.obj.filhos[parte].scaY = --marioScaY;
-    }
-    if (tecla == 'z') {
-        if (acao == 0)
-            mario.obj.filhos[parte].rotZ = ++marioRotZ;
-        if (acao == 1)
-            mario.obj.filhos[parte].posZ = ++marioPosZ/10;
-        if (acao == 2)
-            mario.obj.filhos[parte].scaZ = ++marioScaZ;
-    }
-    if (tecla == 'Z') {
-        if (acao == 0)
-            mario.obj.filhos[parte].rotZ = --marioRotZ;
-        if (acao == 1)
-            mario.obj.filhos[parte].posZ = --marioPosZ/10;
-        if (acao == 2)
-            mario.obj.filhos[parte].scaZ = --marioScaZ;
-    }
+    if (tecla == ' ')
+        flagSpace = false;
 
-    if (tecla == 's') {
-        std::cout << mario.obj.filhos[parte].nome << " = "
-            << "\n" << mario.obj.filhos[parte].posX
-            << ", " << mario.obj.filhos[parte].posY
-            << ", " << mario.obj.filhos[parte].posZ
-            << ", " << mario.obj.filhos[parte].rotX%360
-            << ", " << mario.obj.filhos[parte].rotY%360
-            << ", " << mario.obj.filhos[parte].rotZ%360
-            << ", " << mario.obj.filhos[parte].scaX
-            << ", " << mario.obj.filhos[parte].scaY
-            << ", " << mario.obj.filhos[parte].scaZ
-            << '\n';
-        tecla = 0;
-    }
+    //verificaFlags();
+
 }
 
 void timer(int value) {
@@ -380,9 +405,10 @@ void timer(int value) {
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
+    alutInit(0, NULL);
 
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(800, 800);
+    glutInitWindowSize(800, 600);
     glutInitWindowPosition(900, 5);
     glutCreateWindow("Mario");
 
@@ -391,7 +417,9 @@ int main(int argc, char** argv)
     glutDisplayFunc(display);
 
     // Registra a funo callback para tratamento das teclas normais
-    glutKeyboardFunc(Teclado);
+glutIgnoreKeyRepeat(true);
+    glutKeyboardFunc(teclaPressiona);
+    glutKeyboardUpFunc(teclaSolta);
 
     // Registra a funo callback para tratamento das teclas especiais
     glutSpecialFunc(TeclasEspeciais);    // Registra a funo callback para eventos de botes do mouse
@@ -400,7 +428,8 @@ int main(int argc, char** argv)
 
     // Registra a funo callback para eventos de movimento do mouse
     glutMotionFunc(GerenciaMovim);
-    // glutIdleFunc(spinDisplay);
+
+    glutIdleFunc(verificaFlags);
 
     if (!mario.obj.LoadGLTextures()) {
         return 1; // If Texture Didn't Load Return FALSE
@@ -410,6 +439,8 @@ int main(int argc, char** argv)
     init();
 
     glutMainLoop();
+
+    alutExit();
 
     return 0;
 }

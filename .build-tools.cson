@@ -1,0 +1,62 @@
+providers: [
+  {
+    key: "bt"
+    config:
+      commands: [
+        {
+          project: "/home/divensi/Projects/coisas-CG"
+          source: "/home/divensi/Projects/coisas-CG/.build-tools.cson"
+          name: "Run "
+          command: "tilix -e ./main"
+          wd: "."
+          env: {}
+          modifier:
+            wildcards: {}
+          environment:
+            name: "child_process"
+            config:
+              stdoe: "both"
+          stdout:
+            pipeline: []
+          stderr:
+            pipeline: []
+          output:
+            console:
+              close_success: true
+              queue_in_buffer: true
+              colors: true
+              stdin: true
+          version: 2
+        }
+        {
+          project: "/home/divensi/Projects/coisas-CG"
+          source: "/home/divensi/Projects/coisas-CG/.build-tools.cson"
+          name: "Clang Build"
+          command: "clang++ main.cpp -lGL -lGLU -lglut -lalut -lopenal -pthread -o main -lSOIL -std=c++11 "
+          wd: "."
+          env: {}
+          modifier:
+            wildcards: {}
+            save_all: {}
+          environment:
+            name: "child_process"
+            config:
+              stdoe: "both"
+          stdout:
+            pipeline: []
+          stderr:
+            pipeline: []
+          output:
+            console:
+              close_success: true
+              queue_in_buffer: true
+              colors: true
+              stdin: true
+            linter:
+              no_trace: false
+              immediate: true
+          version: 2
+        }
+      ]
+  }
+]
