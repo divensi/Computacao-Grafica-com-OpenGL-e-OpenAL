@@ -1,6 +1,6 @@
 all: main.cpp
-	g++ -o main ./main.cpp -lGL -lGLU -lglut -lSOIL -pthread -I.
+	clang++ main.cpp -lGL -lGLU -lglut -lalut -lopenal -pthread -o main -lSOIL -std=c++11
 
 run: main.cpp
-	g++ -o main ./main.cpp -lGL -lGLU -lglut -lSOIL -pthread -I.
+	clang++ main.cpp -lGL -lGLU -lglut -lalut -lopenal -pthread -o main -lSOIL -std=c++11
 	tilix -e ./main
