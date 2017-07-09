@@ -91,11 +91,11 @@ void desenhaBolas() {
     glColor3f(1, 0, 0);
     glPushMatrix();
         glTranslatef(-100, 0, 0);
-        glutSolidSphere(2, 12, 12);
+        glutSolidSphere(2, 32, 32);
     glPopMatrix();
     glPushMatrix();
         glTranslatef(100, 0, 0);
-        glutSolidSphere(2, 12, 12);
+        glutSolidSphere(2, 32, 32);
     glPopMatrix();
 }
 
@@ -374,15 +374,16 @@ void make3DSound(const char * filename, float sourceX, float sourceY, float sour
     // Executa
     alSourcePlay(source);
 
+    int x;
     //Espera o fim da execução do audio
     do {
         alGetSourcei(source, AL_SOURCE_STATE, (ALint *)&state);
+        x++;
+        if (x%100 == 0)
+            alSourcef( source, AL_GAIN, 10/dist(sourceX, sourceY, sourceZ,
+                                                mario.posX, mario.posY, mario.posZ));
 
-        alSourcef( source, AL_GAIN, 10/dist(sourceX, sourceY, sourceZ,
-                                            mario.posX, mario.posY, mario.posZ));
-
-        std::cout << mario.posX << " " << mario.posY << " " << mario.posZ << '\n';
-
+        //std::cout << mario.posX << " " << mario.posY << " " << mario.posZ << '\n';
     } while (state == AL_PLAYING);
 
     // Limpa as fontes de audio e buffers

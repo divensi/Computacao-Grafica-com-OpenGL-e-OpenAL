@@ -266,7 +266,7 @@ int Modelo::LoadGLTextures()
             /* load an image file directly as a new OpenGL texture */
             this->membros[i].textura = SOIL_load_OGL_texture(
                 texture_file.str().c_str(), SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID,
-                SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_TEXTURE_REPEATS); //SOIL_FLAG_TEXTURE_REPEATS
+                SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y); //SOIL_FLAG_TEXTURE_REPEATS
 
             if (this->membros[i].textura == 0) {
                 std::cout << "ERRO: falha ao ler textura " << texture_file.str()

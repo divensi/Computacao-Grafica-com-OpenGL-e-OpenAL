@@ -191,9 +191,9 @@ void Mario::importarHierarquia(){
 
     backflip.frames.clear();
     backflip.frames.push_back(Frame( +000, 000, 000, 00, -0.2, 00));
-    backflip.frames.push_back(Frame( -111, 000, 000, 00, +2.0, 00));
-    backflip.frames.push_back(Frame( -111, 000, 000, 00, -0.8, 00));
-    backflip.frames.push_back(Frame( -111, 000, 000, 00, -1.0, 00));
+    backflip.frames.push_back(Frame( -112, 000, 000, 00, +3.0, 00));
+    backflip.frames.push_back(Frame( -111, 000, 000, 00, -1.3, 00));
+    backflip.frames.push_back(Frame( -111, 000, 000, 00, -1.5, 00));
     torso.animations.push_back(backflip);
 
     head.animations.push_back(empty);
